@@ -4,7 +4,6 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// --- CORS POUR NETLIFY (MODIF ICI) ---
 const io = new Server(server, {
   cors: {
     origin: [
@@ -71,6 +70,11 @@ io.on('connection', (socket) => {
     let player = room.players.find(p => p.id === socket.id);
     if (player) player.score = score;
     io.to(code).emit('scoreUpdate', room.players.map(p => ({ name: p.name, score: p.score })));
+  });
+
+  // Synchronisation passage question suivante (CONTINUER)
+  socket.on('nextQuestion', ({ code }) => {
+    io.to(code).emit('nextQuestion');
   });
 
   // Déconnexion
