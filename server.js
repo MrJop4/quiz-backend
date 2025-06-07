@@ -7,7 +7,10 @@ const server = http.createServer(app);
 // --- CORS POUR NETLIFY (MODIF ICI) ---
 const io = new Server(server, {
   cors: {
-    origin: "https://684489ef856308d812ee4955--classy-squirrel-45f2fb.netlify.app",
+    origin: [
+      "https://684489ef856308d812ee4955--classy-squirrel-45f2fb.netlify.app",
+      "https://classy-squirrel-45f2fb.netlify.app"
+    ],
     methods: ["GET", "POST"]
   }
 });
