@@ -3,19 +3,11 @@ const http = require('http');
 const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: [
-      "https://lovely-chaja-a4be3a.netlify.app",
-      "https://classy-squirrel-45f2fb.netlify.app"
-    ],
-    methods: ["GET", "POST"]
-  }
-});
+const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
 
+// Pour servir tes fichiers HTML
 app.use(express.static(__dirname + '/'));
 
 let rooms = {};
@@ -41,19 +33,32 @@ io.on('connection', (socket) => {
 
   // Rejoindre une salle
   socket.on('joinRoom', ({ code, name }) => {
-    if (!rooms[code]) {
-      socket.emit('joinError', 'Code inconnu');
-      return;
-    }
-    if (rooms[code].started) {
-      socket.emit('joinError', 'Partie déjà commencée');
-      return;
-    }
-    socket.join(code);
+  if (!rooms[code]) {
+    socket.emit('joinError', 'Code inconnu');
+    return;
+  }
+  let existing = rooms[code].players.find(p => p.name === name);
+  // Si la partie est commencée, seuls les pseudos déjà enregistrés peuvent revenir
+  if (rooms[code].started && !existing) {
+    socket.emit('joinError', 'Partie déjà commencée (reconnexion uniquement)');
+    return;
+  }
+  // Reconnexion : on met à jour l'id socket
+  if (existing) {
+    existing.id = socket.id;
+  } else {
+    // Nouveau joueur
     rooms[code].players.push({ id: socket.id, name, score: 0, isHost: false });
-    io.to(code).emit('playerList', rooms[code].players);
+  }
+  socket.join(code);
+  io.to(code).emit('playerList', rooms[code].players);
+  if (rooms[code].started && rooms[code].questions) {
+    // On renvoie l'état du jeu pour une reprise immédiate !
+    socket.emit('joinedRoom', { code, resume: true, questions: rooms[code].questions });
+  } else {
     socket.emit('joinedRoom', { code });
-  });
+  }
+});
 
   // Lancement de la partie par le streamer
   socket.on('startGame', ({ code, questions }) => {
@@ -63,21 +68,17 @@ io.on('connection', (socket) => {
     io.to(code).emit('gameStarted', { questions });
   });
 
-  // Score envoyé par un joueur
+  // Enregistrement score d’un joueur (après quiz)
   socket.on('sendScore', ({ code, score }) => {
     let room = rooms[code];
     if (!room) return;
     let player = room.players.find(p => p.id === socket.id);
     if (player) player.score = score;
+    // Diffuse le classement à tous les joueurs
     io.to(code).emit('scoreUpdate', room.players.map(p => ({ name: p.name, score: p.score })));
   });
 
-  // Synchronisation passage question suivante (CONTINUER)
-  socket.on('nextQuestion', ({ code }) => {
-    io.to(code).emit('nextQuestion');
-  });
-
-  // Déconnexion
+  // Déconnexion ou quit
   socket.on('disconnecting', () => {
     for (let code of socket.rooms) {
       if (rooms[code]) {
