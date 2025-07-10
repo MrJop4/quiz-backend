@@ -1,7 +1,10 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
+const cors = require('cors'); // <= NE PAS OUBLIER !
+
 const app = express();
+
 app.use(cors({
   origin: "https://lovely-chaja-a4be3a.netlify.app"
 }));
@@ -14,10 +17,8 @@ const io = new Server(server, {
   }
 });
 
-
 const PORT = process.env.PORT || 3000;
 
-// Pour servir tes fichiers HTML
 app.use(express.static(__dirname + '/'));
 
 let rooms = {};
@@ -41,34 +42,34 @@ io.on('connection', (socket) => {
     io.to(code).emit('playerList', rooms[code].players);
   });
 
-  // Rejoindre une salle
+  // Rejoindre une salle (avec reconnexion)
   socket.on('joinRoom', ({ code, name }) => {
-  if (!rooms[code]) {
-    socket.emit('joinError', 'Code inconnu');
-    return;
-  }
-  let existing = rooms[code].players.find(p => p.name === name);
-  // Si la partie est commencée, seuls les pseudos déjà enregistrés peuvent revenir
-  if (rooms[code].started && !existing) {
-    socket.emit('joinError', 'Partie déjà commencée (reconnexion uniquement)');
-    return;
-  }
-  // Reconnexion : on met à jour l'id socket
-  if (existing) {
-    existing.id = socket.id;
-  } else {
-    // Nouveau joueur
-    rooms[code].players.push({ id: socket.id, name, score: 0, isHost: false });
-  }
-  socket.join(code);
-  io.to(code).emit('playerList', rooms[code].players);
-  if (rooms[code].started && rooms[code].questions) {
-    // On renvoie l'état du jeu pour une reprise immédiate !
-    socket.emit('joinedRoom', { code, resume: true, questions: rooms[code].questions });
-  } else {
-    socket.emit('joinedRoom', { code });
-  }
-});
+    if (!rooms[code]) {
+      socket.emit('joinError', 'Code inconnu');
+      return;
+    }
+    let existing = rooms[code].players.find(p => p.name === name);
+    // Si la partie est commencée, seuls les pseudos déjà enregistrés peuvent revenir
+    if (rooms[code].started && !existing) {
+      socket.emit('joinError', 'Partie déjà commencée (reconnexion uniquement)');
+      return;
+    }
+    // Reconnexion : on met à jour l'id socket
+    if (existing) {
+      existing.id = socket.id;
+    } else {
+      // Nouveau joueur
+      rooms[code].players.push({ id: socket.id, name, score: 0, isHost: false });
+    }
+    socket.join(code);
+    io.to(code).emit('playerList', rooms[code].players);
+    if (rooms[code].started && rooms[code].questions) {
+      // On renvoie l'état du jeu pour une reprise immédiate !
+      socket.emit('joinedRoom', { code, resume: true, questions: rooms[code].questions });
+    } else {
+      socket.emit('joinedRoom', { code });
+    }
+  });
 
   // Lancement de la partie par le streamer
   socket.on('startGame', ({ code, questions }) => {
@@ -84,7 +85,6 @@ io.on('connection', (socket) => {
     if (!room) return;
     let player = room.players.find(p => p.id === socket.id);
     if (player) player.score = score;
-    // Diffuse le classement à tous les joueurs
     io.to(code).emit('scoreUpdate', room.players.map(p => ({ name: p.name, score: p.score })));
   });
 
