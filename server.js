@@ -35,7 +35,13 @@ io.on('connection', (socket) => {
   socket.on('createRoom', ({ name }) => {
     let code;
     do { code = randomRoomCode(); } while (rooms[code]);
-    rooms[code] = { players: [], host: socket.id, questions: null, started: false };
+    rooms[code] = { 
+      players: [], 
+      host: socket.id, 
+      questions: null, 
+      started: false,
+      currentQuestion: 0 // <-- Ajout
+    };
     socket.join(code);
     rooms[code].players.push({ id: socket.id, name: name || "Streamer", score: 0, isHost: true });
     socket.emit('roomCreated', { code });
@@ -65,7 +71,12 @@ io.on('connection', (socket) => {
     io.to(code).emit('playerList', rooms[code].players);
     if (rooms[code].started && rooms[code].questions) {
       // On renvoie l'état du jeu pour une reprise immédiate !
-      socket.emit('joinedRoom', { code, resume: true, questions: rooms[code].questions });
+      socket.emit('joinedRoom', { 
+        code, 
+        resume: true, 
+        questions: rooms[code].questions,
+        currentQuestion: rooms[code].currentQuestion // <-- Ajout
+      });
     } else {
       socket.emit('joinedRoom', { code });
     }
@@ -76,7 +87,28 @@ io.on('connection', (socket) => {
     if (!rooms[code] || rooms[code].host !== socket.id) return;
     rooms[code].started = true;
     rooms[code].questions = questions;
-    io.to(code).emit('gameStarted', { questions });
+    rooms[code].currentQuestion = 0; // <-- Toujours au début
+    io.to(code).emit('gameStarted', { 
+      questions,
+      currentQuestion: 0, // <-- Ajout pour initialiser tous les clients
+      question: questions[0] // <-- Envoi direct de la première question (optionnel)
+    });
+  });
+
+  // Passer à la question suivante (émis par le streamer)
+  socket.on('nextQuestion', ({ code }) => {
+    const room = rooms[code];
+    if (!room || room.host !== socket.id) return;
+    if (room.currentQuestion === undefined) room.currentQuestion = 0;
+    if (room.currentQuestion < room.questions.length - 1) {
+      room.currentQuestion += 1;
+      io.to(code).emit('nextQuestion', {
+        questionIndex: room.currentQuestion,
+        question: room.questions[room.currentQuestion]
+      });
+    } else {
+      io.to(code).emit('quizFinished');
+    }
   });
 
   // Enregistrement score d’un joueur (après quiz)
