@@ -72,11 +72,11 @@ io.on('connection', (socket) => {
     if (rooms[code].started && rooms[code].questions) {
       // On renvoie l'état du jeu pour une reprise immédiate !
       socket.emit('joinedRoom', { 
-        code, 
-        resume: true, 
-        questions: rooms[code].questions,
-        currentQuestion: rooms[code].currentQuestion // <-- Ajout
-      });
+  code, 
+  resume: true, 
+  questions: rooms[code].questions,
+  currentQuestion: rooms[code].currentQuestionIndex || 0
+});
     } else {
       socket.emit('joinedRoom', { code });
     }
