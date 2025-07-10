@@ -111,6 +111,15 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Nullification d'une question (par le streamer)
+socket.on('nullifyQuestion', ({ code, questionIndex, newQuestion }) => {
+  const room = rooms[code];
+  if (!room || room.host !== socket.id) return;
+  // Remplace la question pour tout le monde
+  room.questions[questionIndex] = newQuestion;
+  io.to(code).emit('questionNullified', { questionIndex, question: newQuestion });
+});
+
   // Enregistrement score d’un joueur (après quiz)
   socket.on('sendScore', ({ code, score }) => {
     let room = rooms[code];
