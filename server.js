@@ -1,25 +1,19 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
-const cors = require('cors'); // <= NE PAS OUBLIER !
-
-const app = express();
-
+const cors = require('cors');
 app.use(cors({
-  origin: "https://lovely-chaja-a4be3a.netlify.app"
+  origin: "*"
 }));
 
-const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://lovely-chaja-a4be3a.netlify.app",
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
 
 const PORT = process.env.PORT || 3000;
-
-app.use(express.static(__dirname + '/'));
 
 let rooms = {};
 
