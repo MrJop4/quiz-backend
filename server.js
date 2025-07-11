@@ -70,16 +70,16 @@ io.on('connection', (socket) => {
     socket.join(code);
     io.to(code).emit('playerList', rooms[code].players);
     if (rooms[code].started && rooms[code].questions) {
-      // On renvoie l'état du jeu pour une reprise immédiate !
-      socket.emit('joinedRoom', { 
-  code, 
-  resume: true, 
-  questions: rooms[code].questions,
-  currentQuestion: rooms[code].currentQuestionIndex || 0
-});
-    } else {
-      socket.emit('joinedRoom', { code });
-    }
+  socket.emit('joinedRoom', { 
+    code, 
+    resume: true, 
+    questions: rooms[code].questions,
+    currentQuestion: rooms[code].currentQuestion,
+    question: rooms[code].questions[rooms[code].currentQuestion]
+  });
+} else {
+  socket.emit('joinedRoom', { code });
+}
   });
 
   // Lancement de la partie par le streamer
