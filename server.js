@@ -1,19 +1,25 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
-const cors = require('cors');
+const cors = require('cors'); // <= NE PAS OUBLIER !
+
+const app = express();
+
 app.use(cors({
-  origin: "*"
+  origin: "https://lovely-chaja-a4be3a.netlify.app"
 }));
 
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "https://lovely-chaja-a4be3a.netlify.app",
     methods: ["GET", "POST"]
   }
 });
 
 const PORT = process.env.PORT || 3000;
+
+app.use(express.static(__dirname + '/'));
 
 let rooms = {};
 
@@ -64,16 +70,16 @@ io.on('connection', (socket) => {
     socket.join(code);
     io.to(code).emit('playerList', rooms[code].players);
     if (rooms[code].started && rooms[code].questions) {
-  socket.emit('joinedRoom', { 
-    code, 
-    resume: true, 
-    questions: rooms[code].questions,
-    currentQuestion: rooms[code].currentQuestion,
-    question: rooms[code].questions[rooms[code].currentQuestion]
-  });
-} else {
-  socket.emit('joinedRoom', { code });
-}
+      // On renvoie l'état du jeu pour une reprise immédiate !
+      socket.emit('joinedRoom', { 
+  code, 
+  resume: true, 
+  questions: rooms[code].questions,
+  currentQuestion: rooms[code].currentQuestionIndex || 0
+});
+    } else {
+      socket.emit('joinedRoom', { code });
+    }
   });
 
   // Lancement de la partie par le streamer
