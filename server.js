@@ -47,68 +47,71 @@ io.on('connection', (socket) => {
     socket.emit('roomCreated', { code });
     io.to(code).emit('playerList', rooms[code].players);
   });
-
-  // Rejoindre une salle (avec reconnexion)
 socket.on('joinRoom', ({ code, name }) => {
   if (!rooms[code]) {
     socket.emit('joinError', 'Code inconnu');
     return;
   }
 
+  // Recherche du joueur déjà existant (reconnexion ?)
   let existing = rooms[code].players.find(p => p.name === name);
 
   if (existing) {
-    // Reconnexion : on met à jour l'ID
+    // Reconnexion : mise à jour de l’ID Socket
     existing.id = socket.id;
     socket.join(code);
   } else {
-    // Partie commencée ? Nouveau joueur interdit
+    // Partie déjà commencée ? Interdit de rejoindre
     if (rooms[code].started) {
       socket.emit('joinError', 'Partie déjà commencée (reconnexion uniquement)');
       return;
     }
-    // Nouveau joueur accepté (avant début)
+    // Nouveau joueur autorisé (partie non commencée)
     rooms[code].players.push({ id: socket.id, name, score: 0, isHost: false });
     socket.join(code);
   }
 
+  // Mise à jour de la liste de joueurs pour toute la salle
   io.to(code).emit('playerList', rooms[code].players);
 
+  // S’il y a une partie en cours, on renvoie l’état complet
   if (
-  rooms[code].started &&
-  Array.isArray(rooms[code].questions) &&
-  typeof rooms[code].currentQuestion === 'number' &&
-  rooms[code].currentQuestion < rooms[code].questions.length
-) {
-  const idx = rooms[code].currentQuestion;
-const qtab = rooms[code].questions;
+    rooms[code].started &&
+    Array.isArray(rooms[code].questions) &&
+    typeof rooms[code].currentQuestion === 'number' &&
+    rooms[code].currentQuestion < rooms[code].questions.length
+  ) {
+    const idx = rooms[code].currentQuestion;
+    const qtab = rooms[code].questions;
+    const player = rooms[code].players.find(p => p.id === socket.id);
 
-if (
-  rooms[code].started &&
-  Array.isArray(qtab) &&
-  typeof idx === 'number' &&
-  idx >= 0 &&
-  idx < qtab.length &&
-  qtab[idx] &&
-  typeof qtab[idx].question === 'string' &&
-  Array.isArray(qtab[idx].answers) &&
-  typeof qtab[idx].correct === 'number'
-) {
-  socket.emit('joinedRoom', { 
-    code, 
-    resume: true, 
-    questions: qtab,
-    currentQuestion: idx
-  });
-} else {
-  socket.emit('joinError', "Impossible de retrouver la question en cours ou la partie.");
-}
-}
- else {
+    // Vérification de la validité de la question courante
+    if (
+      qtab &&
+      typeof idx === 'number' &&
+      idx >= 0 &&
+      idx < qtab.length &&
+      qtab[idx] &&
+      typeof qtab[idx].question === 'string' &&
+      Array.isArray(qtab[idx].answers) &&
+      typeof qtab[idx].correct === 'number'
+    ) {
+      socket.emit('joinedRoom', { 
+        code, 
+        resume: true, 
+        questions: qtab,
+        currentQuestion: idx,
+        playerScore: player ? player.score : 0,   // Score actuel du joueur (reconnexion)
+        gameState: 'playing'                      // Peut être utilisé côté client pour gérer l’UI
+      });
+    } else {
+      socket.emit('joinError', "Impossible de retrouver la question en cours ou la partie.");
+    }
+  } else {
+    // Sinon, retour classique (lobby)
     socket.emit('joinedRoom', { code });
   }
 });
-
   // Lancement de la partie par le streamer
 socket.on('startGame', ({ code, questions }) => {
   if (!rooms[code] || rooms[code].host !== socket.id) return;
