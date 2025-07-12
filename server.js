@@ -80,12 +80,29 @@ socket.on('joinRoom', ({ code, name }) => {
   typeof rooms[code].currentQuestion === 'number' &&
   rooms[code].currentQuestion < rooms[code].questions.length
 ) {
+  const idx = rooms[code].currentQuestion;
+const qtab = rooms[code].questions;
+
+if (
+  rooms[code].started &&
+  Array.isArray(qtab) &&
+  typeof idx === 'number' &&
+  idx >= 0 &&
+  idx < qtab.length &&
+  qtab[idx] &&
+  typeof qtab[idx].question === 'string' &&
+  Array.isArray(qtab[idx].answers) &&
+  typeof qtab[idx].correct === 'number'
+) {
   socket.emit('joinedRoom', { 
     code, 
     resume: true, 
-    questions: rooms[code].questions,
-    currentQuestion: rooms[code].currentQuestion
+    questions: qtab,
+    currentQuestion: idx
   });
+} else {
+  socket.emit('joinError', "Impossible de retrouver la question en cours ou la partie.");
+}
 }
  else {
     socket.emit('joinedRoom', { code });
