@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
   code, 
   resume: true, 
   questions: rooms[code].questions,
-  currentQuestion: rooms[code].currentQuestionIndex || 0
+  currentQuestion: rooms[code].currentQuestion || 0
 });
     } else {
       socket.emit('joinedRoom', { code });
