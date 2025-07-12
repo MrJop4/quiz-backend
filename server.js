@@ -49,38 +49,42 @@ io.on('connection', (socket) => {
   });
 
   // Rejoindre une salle (avec reconnexion)
-  socket.on('joinRoom', ({ code, name }) => {
-    if (!rooms[code]) {
-      socket.emit('joinError', 'Code inconnu');
-      return;
-    }
-    let existing = rooms[code].players.find(p => p.name === name);
-    // Si la partie est commencée, seuls les pseudos déjà enregistrés peuvent revenir
-    if (rooms[code].started && !existing) {
+socket.on('joinRoom', ({ code, name }) => {
+  if (!rooms[code]) {
+    socket.emit('joinError', 'Code inconnu');
+    return;
+  }
+
+  let existing = rooms[code].players.find(p => p.name === name);
+
+  if (existing) {
+    // Reconnexion : on met à jour l'ID
+    existing.id = socket.id;
+    socket.join(code);
+  } else {
+    // Partie commencée ? Nouveau joueur interdit
+    if (rooms[code].started) {
       socket.emit('joinError', 'Partie déjà commencée (reconnexion uniquement)');
       return;
     }
-    // Reconnexion : on met à jour l'id socket
-    if (existing) {
-      existing.id = socket.id;
-    } else {
-      // Nouveau joueur
-      rooms[code].players.push({ id: socket.id, name, score: 0, isHost: false });
-    }
+    // Nouveau joueur accepté (avant début)
+    rooms[code].players.push({ id: socket.id, name, score: 0, isHost: false });
     socket.join(code);
-    io.to(code).emit('playerList', rooms[code].players);
-    if (rooms[code].started && rooms[code].questions) {
-      // On renvoie l'état du jeu pour une reprise immédiate !
-      socket.emit('joinedRoom', { 
-  code, 
-  resume: true, 
-  questions: rooms[code].questions,
-  currentQuestion: rooms[code].currentQuestion || 0
+  }
+
+  io.to(code).emit('playerList', rooms[code].players);
+
+  if (rooms[code].started && rooms[code].questions) {
+    socket.emit('joinedRoom', { 
+      code, 
+      resume: true, 
+      questions: rooms[code].questions,
+      currentQuestion: rooms[code].currentQuestion || 0
+    });
+  } else {
+    socket.emit('joinedRoom', { code });
+  }
 });
-    } else {
-      socket.emit('joinedRoom', { code });
-    }
-  });
 
   // Lancement de la partie par le streamer
   socket.on('startGame', ({ code, questions }) => {
@@ -133,7 +137,10 @@ socket.on('nullifyQuestion', ({ code, questionIndex, newQuestion }) => {
   socket.on('disconnecting', () => {
     for (let code of socket.rooms) {
       if (rooms[code]) {
-        rooms[code].players = rooms[code].players.filter(p => p.id !== socket.id);
+        let player = rooms[code].players.find(p => p.id === socket.id);
+if (player) {
+  player.id = null; // Marque comme déconnecté
+}
         io.to(code).emit('playerList', rooms[code].players);
         if (rooms[code].players.length === 0) delete rooms[code];
       }
