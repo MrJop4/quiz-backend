@@ -74,78 +74,81 @@ socket.on('joinRoom', ({ code, name }) => {
 
   io.to(code).emit('playerList', rooms[code].players);
 
-  if (rooms[code].started && rooms[code].questions) {
-    socket.emit('joinedRoom', { 
-      code, 
-      resume: true, 
-      questions: rooms[code].questions,
-      currentQuestion: rooms[code].currentQuestion || 0
-    });
-  } else {
+  if (
+  rooms[code].started &&
+  Array.isArray(rooms[code].questions) &&
+  typeof rooms[code].currentQuestion === 'number' &&
+  rooms[code].currentQuestion < rooms[code].questions.length
+) {
+  socket.emit('joinedRoom', { 
+    code, 
+    resume: true, 
+    questions: rooms[code].questions,
+    currentQuestion: rooms[code].currentQuestion
+  });
+}
+ else {
     socket.emit('joinedRoom', { code });
   }
 });
 
   // Lancement de la partie par le streamer
-  socket.on('startGame', ({ code, questions }) => {
-    if (!rooms[code] || rooms[code].host !== socket.id) return;
-    rooms[code].started = true;
-    rooms[code].questions = questions;
-    rooms[code].currentQuestion = 0; // <-- Toujours au début
-    io.to(code).emit('gameStarted', { 
-      questions,
-      currentQuestion: 0, // <-- Ajout pour initialiser tous les clients
-      question: questions[0] // <-- Envoi direct de la première question (optionnel)
+socket.on('startGame', ({ code, questions }) => {
+  if (!rooms[code] || rooms[code].host !== socket.id) return;
+  rooms[code].started = true;
+  rooms[code].questions = questions;
+  rooms[code].currentQuestion = 0;
+  io.to(code).emit('gameStarted', { 
+    questions,
+    currentQuestion: 0,
+    question: questions[0]
+  });
+});
+
+// Passer à la question suivante
+socket.on('nextQuestion', ({ code }) => {
+  const room = rooms[code];
+  if (!room || room.host !== socket.id) return;
+  if (room.currentQuestion === undefined) room.currentQuestion = 0;
+  if (room.currentQuestion < room.questions.length - 1) {
+    room.currentQuestion += 1;
+    io.to(code).emit('nextQuestion', {
+      questionIndex: room.currentQuestion,
+      question: room.questions[room.currentQuestion]
     });
-  });
+  } else {
+    io.to(code).emit('quizFinished');
+  }
+});
 
-  // Passer à la question suivante (émis par le streamer)
-  socket.on('nextQuestion', ({ code }) => {
-    const room = rooms[code];
-    if (!room || room.host !== socket.id) return;
-    if (room.currentQuestion === undefined) room.currentQuestion = 0;
-    if (room.currentQuestion < room.questions.length - 1) {
-      room.currentQuestion += 1;
-      io.to(code).emit('nextQuestion', {
-        questionIndex: room.currentQuestion,
-        question: room.questions[room.currentQuestion]
-      });
-    } else {
-      io.to(code).emit('quizFinished');
-    }
-  });
-
-  // Nullification d'une question (par le streamer)
+// Nullification
 socket.on('nullifyQuestion', ({ code, questionIndex, newQuestion }) => {
   const room = rooms[code];
   if (!room || room.host !== socket.id) return;
-  // Remplace la question pour tout le monde
   room.questions[questionIndex] = newQuestion;
   io.to(code).emit('questionNullified', { questionIndex, question: newQuestion });
 });
 
-  // Enregistrement score d’un joueur (après quiz)
-  socket.on('sendScore', ({ code, score }) => {
-    let room = rooms[code];
-    if (!room) return;
-    let player = room.players.find(p => p.id === socket.id);
-    if (player) player.score = score;
-    io.to(code).emit('scoreUpdate', room.players.map(p => ({ name: p.name, score: p.score })));
-  });
+// Score
+socket.on('sendScore', ({ code, score }) => {
+  const room = rooms[code];
+  if (!room) return;
+  const player = room.players.find(p => p.id === socket.id);
+  if (player) player.score = score;
+  io.to(code).emit('scoreUpdate', room.players.map(p => ({ name: p.name, score: p.score })));
+});
 
-  // Déconnexion ou quit
-  socket.on('disconnecting', () => {
-    for (let code of socket.rooms) {
-      if (rooms[code]) {
-        let player = rooms[code].players.find(p => p.id === socket.id);
-if (player) {
-  player.id = null; // Marque comme déconnecté
-}
-        io.to(code).emit('playerList', rooms[code].players);
-        if (rooms[code].players.length === 0) delete rooms[code];
-      }
+// Déconnexion
+socket.on('disconnecting', () => {
+  for (let code of socket.rooms) {
+    if (rooms[code]) {
+      let player = rooms[code].players.find(p => p.id === socket.id);
+      if (player) player.id = null;
+      io.to(code).emit('playerList', rooms[code].players);
+      if (rooms[code].players.length === 0) delete rooms[code];
     }
-  });
+  }
+});
 });
 
 server.listen(PORT, () => {
