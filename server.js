@@ -45,6 +45,22 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// API routes should be defined BEFORE the static middleware.
+// This ensures that API requests are handled by their specific routes
+// before Express tries to find a static file.
+app.get('/difficulties', (req, res) => {
+  const difficulties = [...new Set(questionDatabase.map(q => q.difficulty))];
+  res.json(difficulties);
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: Date.now(),
+    uptime: process.uptime()
+  });
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: corsOptions // Reuse the same CORS options for Socket.IO
@@ -750,19 +766,6 @@ setInterval(() => {
     }
   });
 }, 60000); 
-
-app.get('/difficulties', (req, res) => {
-  const difficulties = [...new Set(questionDatabase.map(q => q.difficulty))];
-  res.json(difficulties);
-});
-
-app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy', 
-    timestamp: Date.now(),
-    uptime: process.uptime()
-  });
-});
 
 process.on('uncaughtException', (error) => {
   console.error('Erreur non gérée:', error);
