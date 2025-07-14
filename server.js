@@ -13,9 +13,17 @@ const app = express();
 // It's better to use a whitelist for CORS origins.
 // This allows you to support your production frontend and local development environments.
 const allowedOrigins = [
-  'https://quiz-backend-v2-prod.up.railway.app/', // <-- frontend URL
-  'http://localhost:8080',                //adjust port if needed
-  'http://127.0.0.1:8080',
+  // --- IMPORTANT ---
+  // Si frontend est déployé sur un autre service (Vercel, Netlify, etc.),
+  // ajouter son URL ici. Par exemple :
+  // 'https://mon-quiz-frontend.netlify.app',
+
+  // URL du backend lui-même (si le frontend est servi par ce même serveur)
+  // absence de / à la fin, c'est crucial.
+  'https://quiz-backend-v2-prod.up.railway.app',
+  // URLs pour le développement local (le port 3000 correspond à vos fichiers V2/index.html)
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
 ];
 
 // You can still use an environment variable for more flexibility, for example for preview deployments.
