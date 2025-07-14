@@ -20,7 +20,7 @@ const allowedOrigins = [
 
   // URL du backend lui-même (si le frontend est servi par ce même serveur)
   // absence de / à la fin, c'est crucial.
-  'https://quiz-backend-v2-prod.up.railway.app',
+  'https://polyquiz-sc.up.railway.app',
   // URLs pour le développement local (le port 3000 correspond à vos fichiers V2/index.html)
   'http://localhost:3000',
   'http://127.0.0.1:3000'
