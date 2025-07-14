@@ -788,6 +788,12 @@
             Temps par question (10-60s):
             <input type="number" id="input-time-per-question" class="input" value="20" min="10" max="60">
           </label>
+          <label for="input-difficulty" style="color: var(--text-secondary); font-size: 0.95em;">
+            Difficulté :
+            <select id="input-difficulty" class="input" style="padding: 1rem 1.5rem; height: auto;">
+                <option value="all">Toutes</option>
+            </select>
+          </label>
         </div>
         
         <button id="confirm-host-avatar" class="btn" style="margin-top: 1rem;">Créer la partie</button>
@@ -1125,6 +1131,7 @@ document.getElementById('confirm-host-avatar').onclick = function() {
   // Récupérer les paramètres de partie
   const numQuestionsInput = document.getElementById('input-num-questions');
   const timePerQuestionInput = document.getElementById('input-time-per-question');
+  const difficultyInput = document.getElementById('input-difficulty');
   
   let numQuestions = parseInt(numQuestionsInput.value);
   let timePerQuestion = parseInt(timePerQuestionInput.value);
@@ -1139,13 +1146,16 @@ document.getElementById('confirm-host-avatar').onclick = function() {
     return;
   }
 
+  const selectedDifficulty = difficultyInput.value;
+
   showLoading('Création de la partie...');
   socket.emit('createRoom', { 
     name: playerName,
     avatar: selectedAvatar,
     playerId: playerId, // Envoyer le playerId
     numQuestions: numQuestions, // Envoyer le nombre de questions
-    timePerQuestion: timePerQuestion // Envoyer le temps par question
+    timePerQuestion: timePerQuestion, // Envoyer le temps par question
+    difficulty: selectedDifficulty // Envoyer la difficulté
   });
   saveSessionInfo();
 };
@@ -2161,6 +2171,23 @@ window.addEventListener('DOMContentLoaded', function() {
   
   logDebug('✅ Système d\'avatars initialisé avec', TOTAL_AVATARS, 'avatars disponibles');
   logDebug('✅ Player ID:', playerId);
+
+  // Fetch and populate difficulties for the host
+  fetch(socket.io.uri + '/difficulties')
+    .then(response => response.json())
+    .then(difficulties => {
+        const difficultySelect = document.getElementById('input-difficulty');
+        if (difficultySelect) {
+            difficulties.forEach(difficulty => {
+                const option = document.createElement('option');
+                option.value = difficulty;
+                // Capitalize first letter for a nicer display
+                option.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+                difficultySelect.appendChild(option);
+            });
+        }
+    })
+    .catch(error => console.error('Error fetching difficulties:', error));
 });
 
 </script>

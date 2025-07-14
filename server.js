@@ -93,17 +93,27 @@ function randomRoomCode(length = 6) {
 }
 
 // Fonction pour filtrer et sélectionner les questions côté serveur
-function getFilteredQuestions(allQuestions, count = DEFAULT_NUM_QUESTIONS) {
-  // Create a shuffled copy of all questions
-  const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+function getFilteredQuestions(allQuestions, count = DEFAULT_NUM_QUESTIONS, difficulty = 'normal') {
+  let potentialQuestions = allQuestions;
 
-  // If there aren't enough questions, return all of them shuffled
-  if (shuffled.length < count) {
-    console.warn(`Not enough unique questions available. Wanted ${count}, got ${shuffled.length}.`);
-    return shuffled;
+  // 1. Filter by difficulty if a specific one is chosen (and not 'all')
+  if (difficulty && difficulty.toLowerCase() !== 'all') {
+    potentialQuestions = allQuestions.filter(q => q.difficulty === difficulty);
+    console.log(`Filtering for difficulty: ${difficulty}. Found ${potentialQuestions.length} questions.`);
+  } else {
+    console.log(`No difficulty filter applied. Using all ${potentialQuestions.length} questions.`);
   }
 
-  // Return the requested number of questions
+  // 2. Shuffle the potential questions
+  const shuffled = [...potentialQuestions].sort(() => Math.random() - 0.5);
+
+  // 3. Check if there are enough questions for the requested count
+  if (shuffled.length < count) {
+    console.warn(`Not enough unique questions for difficulty '${difficulty}'. Wanted ${count}, got ${shuffled.length}. Returning all available.`);
+    return shuffled; // Return all available shuffled questions for that difficulty
+  }
+
+  // 4. Slice to the desired count
   const selected = shuffled.slice(0, count);
   return selected;
 }
@@ -124,7 +134,7 @@ io.on('connection', (socket) => {
   });
 
   // Événement pour créer une salle
-  socket.on('createRoom', ({ name, avatar, playerId, numQuestions, timePerQuestion }) => {
+  socket.on('createRoom', ({ name, avatar, playerId, numQuestions, timePerQuestion, difficulty }) => {
     let code;
     do { code = randomRoomCode(); } while (rooms[code]);
     
@@ -140,6 +150,7 @@ io.on('connection', (socket) => {
       serverTimer: null,
       numQuestionsTotal: numQuestions || DEFAULT_NUM_QUESTIONS, // Stocke le nombre total de questions
       timePerQuestionDuration: (timePerQuestion * 1000) || DEFAULT_QUESTION_TIMER_DURATION, // Stocke le temps par question en ms
+      difficulty: difficulty || 'normal', // Stocke la difficulté choisie
       pausedByHostDisconnect: false, // Ajout pour la pause en cas de déconnexion de l'hôte
       eventLog: [] // Initialiser le journal d'événements
     };
@@ -160,7 +171,7 @@ io.on('connection', (socket) => {
     socket.emit('roomCreated', { code });
     io.to(code).emit('playerList', rooms[code].players);
     logToRoom(code, `Salle créée par ${name}.`);
-    console.log(`Salle créée: ${code} par ${name} avec ${numQuestions} questions et ${timePerQuestion}s/question.`);
+    console.log(`Salle créée: ${code} par ${name} avec ${numQuestions} questions, ${timePerQuestion}s/question et difficulté '${difficulty}'.`);
   });
 
   // Événement pour rejoindre une salle
@@ -289,7 +300,7 @@ io.on('connection', (socket) => {
       return;
     }
     
-    const selectedQuestions = getFilteredQuestions(questionDatabase, room.numQuestionsTotal); 
+    const selectedQuestions = getFilteredQuestions(questionDatabase, room.numQuestionsTotal, room.difficulty); 
     room.questions = selectedQuestions;
     room.usedQuestionIds = selectedQuestions.map(q => q.id); 
     
@@ -577,14 +588,22 @@ io.on('connection', (socket) => {
     }
     
     if (questionIndex >= 0 && questionIndex < room.questions.length) {
-      let alreadyUsed = room.questions.map(q => q.id); 
-      let candidates = questionDatabase.filter(qdb => !alreadyUsed.includes(qdb.id));
+      let alreadyUsedIds = room.questions.map(q => q.id);
+      
+      // Filter candidates by difficulty first
+      let potentialCandidates = questionDatabase;
+      if (room.difficulty && room.difficulty.toLowerCase() !== 'all') {
+          potentialCandidates = questionDatabase.filter(q => q.difficulty === room.difficulty);
+      }
+
+      // Then filter out already used questions
+      let candidates = potentialCandidates.filter(qdb => !alreadyUsedIds.includes(qdb.id));
       let newQuestion;
 
-      if(candidates.length > 0){
-        newQuestion = candidates[Math.floor(Math.random()*candidates.length)];
-      } else {
-        newQuestion = room.questions[questionIndex];
+      if (candidates.length > 0) {
+        newQuestion = candidates[Math.floor(Math.random() * candidates.length)];
+      } else { // Fallback to the same question if no replacements are found
+        newQuestion = room.questions[questionIndex]; 
         console.warn(`Plus de nouvelles questions disponibles pour nullifier dans ${code}.`);
       }
 
@@ -731,6 +750,11 @@ setInterval(() => {
     }
   });
 }, 60000); 
+
+app.get('/difficulties', (req, res) => {
+  const difficulties = [...new Set(questionDatabase.map(q => q.difficulty))];
+  res.json(difficulties);
+});
 
 app.get('/health', (req, res) => {
   res.status(200).json({ 
