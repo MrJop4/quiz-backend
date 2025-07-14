@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tableau de Bord Modérateur - Quiz</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;800&display=swap');
+    :root {
+      --primary: #00d4ff;
+      --secondary: #ff6b35;
+      --accent: #7c3aed;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --dark-bg: #0a0a0f;
+      --card-bg: rgba(15, 23, 42, 0.95);
+      --glass-bg: rgba(30, 41, 59, 0.8);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --border: rgba(148, 163, 184, 0.2);
+      --glow: 0 0 20px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, #0a0a0f 0%, #1e293b 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    .container {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .quiz-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      padding: 3rem;
+      width: 100%;
+      box-shadow: 
+        var(--glow) rgba(0, 212, 255, 0.1),
+        0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .lobby-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 2rem;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: var(--glow) rgba(0, 212, 255, 0.3);
+    }
+    .dashboard-layout {
+        display: flex;
+        gap: 1.5rem;
+        min-height: 60vh;
+    }
+    #room-list-container {
+        flex: 0 0 300px;
+        background: var(--glass-bg);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+        overflow-y: auto;
+    }
+    #room-details-container {
+        flex-grow: 1;
+        background: var(--glass-bg);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+    }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 1.5rem;
+        width: 100%;
+    }
+    .room-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    .room-card.paused {
+        border-color: var(--warning);
+        box-shadow: var(--glow) rgba(245, 158, 11, 0.3);
+    }
+    .room-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .room-code {
+        font-family: 'Orbitron', monospace;
+        font-size: 1.5rem;
+        color: var(--primary);
+        font-weight: 700;
+    }
+    .room-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.9em;
+        font-weight: 600;
+    }
+    .status-lobby { background: rgba(0, 212, 255, 0.2); color: var(--primary); }
+    .status-ingame { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .status-paused { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .mod-players-list {
+        list-style: none;
+        padding: 0;
+        max-height: 200px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+    .mod-player-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+    }
+    .mod-player-item.disconnected {
+        opacity: 0.5;
+        font-style: italic;
+    }
+    .mod-player-item:nth-child(odd) {
+        background: rgba(0,0,0,0.1);
+    }
+    .server-stats {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: var(--glass-bg);
+        border-radius: 1rem;
+    }
+    .stat-item { text-align: center; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+    .stat-label { font-size: 1rem; color: var(--text-secondary); }
+
+    /* Nouveaux styles pour la liste et les détails */
+    .room-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        border: 1px solid transparent;
+    }
+    .room-list-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .room-list-item.active {
+        background: rgba(0, 212, 255, 0.1);
+        border-color: var(--primary);
+        font-weight: 600;
+    }
+    .player-count-badge {
+        background: var(--accent);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 0.5rem;
+        font-size: 0.9em;
+    }
+    .details-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--text-secondary);
+        font-size: 1.2em;
+    }
+    .event-log-container {
+        margin-top: 2rem;
+        background: rgba(0,0,0,0.2);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        height: 300px;
+        overflow-y: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9em;
+    }
+    .log-entry {
+        padding: 0.2rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Styles pour l'overlay d'authentification */
+    .auth-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100001;
+        backdrop-filter: blur(5px);
+        transition: opacity 0.3s ease-in-out;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .auth-overlay.visible {
+        opacity: 1;
+        pointer-events: all;
+    }
+    .auth-modal {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: var(--glow) rgba(0, 212, 255, 0.2);
+    }
+    .auth-title { font-family: 'Orbitron', monospace; font-size: 1.8rem; color: var(--primary); margin-bottom: 1rem; }
+    .auth-desc { color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .auth-modal .input { width: 100%; margin: 0 0 1rem 0; background: var(--dark-bg); text-align: center; font-size: 1.2em; }
+    .auth-modal .btn { width: 100%; background: linear-gradient(45deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 0.75rem; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+    .auth-modal .btn:hover { transform: translateY(-2px); box-shadow: var(--glow) rgba(0, 212, 255, 0.5); }
+    .auth-error { color: var(--danger); margin-top: 1rem; min-height: 1.2em; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div id="auth-overlay" class="auth-overlay visible">
+    <div class="auth-modal">
+        <h2 class="auth-title">Accès Modérateur</h2>
+        <p class="auth-desc">Veuillez entrer le mot de passe pour accéder au tableau de bord.</p>
+        <input type="password" id="password-input" class="input" placeholder="••••••••" style="color: white;">
+        <button id="password-submit" class="btn">Valider</button>
+        <p id="auth-error" class="auth-error"></p>
+    </div>
+</div>
+
+<div class="container">
+  <div class="quiz-card">
+    <h1 class="lobby-title" style="text-align: center;">Tableau de Bord Modérateur</h1>
+    <div id="server-stats" class="server-stats">
+        <!-- Les statistiques du serveur seront affichées ici -->
+    </div>
+    <div class="dashboard-layout">
+        <div id="room-list-container">
+            <!-- La liste des salles sera affichée ici -->
+        </div>
+        <div id="room-details-container">
+            <!-- Les détails de la salle sélectionnée seront affichés ici -->
+        </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+    const socket = io('http://localhost:3000');
+
+    let selectedRoomCode = null;
+    let currentStatusData = null;
+
+    const authOverlay = document.getElementById('auth-overlay');
+    const passwordInput = document.getElementById('password-input');
+    const passwordSubmit = document.getElementById('password-submit');
+    const authError = document.getElementById('auth-error');
+
+    passwordSubmit.onclick = () => {
+        const password = passwordInput.value;
+        if (password) {
+            authError.textContent = ''; // Clear previous errors
+            socket.emit('registerModerator', { password: password });
+        }
+    };
+
+    passwordInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            passwordSubmit.click();
+        }
+    });
+
+    socket.on('connect', () => {
+        console.log('Connecté au serveur, en attente d\'authentification.');
+        // Le modal est déjà visible par défaut
+    });
+
+    socket.on('moderatorAuthSuccess', () => {
+        console.log('Authentification réussie.');
+        authOverlay.classList.remove('visible');
+    });
+
+    socket.on('moderatorAuthFailed', ({ message }) => {
+        console.error('Échec de l\'authentification:', message);
+        authError.textContent = message;
+        passwordInput.value = ''; // Vider le champ
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Déconnecté du serveur.');
+        document.getElementById('server-stats').innerHTML = '<div class="stat-item"><div class="stat-value" style="color:var(--danger)">OFFLINE</div><div class="stat-label">Serveur</div></div>';
+        document.getElementById('room-list-container').innerHTML = '';
+        document.getElementById('room-details-container').innerHTML = '';
+        authOverlay.classList.add('visible');
+        authError.textContent = 'Déconnecté. Veuillez vous ré-authentifier.';
+    });
+
+    socket.on('serverStatusUpdate', (status) => {
+        currentStatusData = status;
+        renderServerStats(status);
+        renderRoomList(status.roomDetails);
+        renderSelectedRoomDetails();
+    });
+
+    function renderDashboard(status) {
+        const statsContainer = document.getElementById('server-stats');
+        const gridContainer = document.getElementById('dashboard-grid');
+
+        // Render server stats
+        const uptimeSeconds = Math.floor(status.uptime);
+        const hours = String(Math.floor(uptimeSeconds / 3600)).padStart(2, '0');
+        const minutes = String(Math.floor((uptimeSeconds % 3600) / 60)).padStart(2, '0');
+        const seconds = String(uptimeSeconds % 60).padStart(2, '0');
+        const uptimeFormatted = `${hours}h ${minutes}m ${seconds}s`;
+
+        statsContainer.innerHTML = `
+            <div class="stat-item"><div class="stat-value">${status.rooms}</div><div class="stat-label">Salles Actives</div></div>
+            <div class="stat-item"><div class="stat-value">${status.players}</div><div class="stat-label">Joueurs Connectés</div></div>
+            <div class="stat-item"><div class="stat-value">${uptimeFormatted}</div><div class="stat-label">Uptime</div></div>
+        `;
+    }
+
+    function renderServerStats(status) {
+        const statsContainer = document.getElementById('server-stats');
+        const uptimeSeconds = Math.floor(status.uptime);
+        const hours = String(Math.floor(uptimeSeconds / 3600)).padStart(2, '0');
+        const minutes = String(Math.floor((uptimeSeconds % 3600) / 60)).padStart(2, '0');
+        const seconds = String(uptimeSeconds % 60).padStart(2, '0');
+        const uptimeFormatted = `${hours}h ${minutes}m ${seconds}s`;
+
+        statsContainer.innerHTML = `
+            <div class="stat-item"><div class="stat-value">${status.rooms}</div><div class="stat-label">Salles Actives</div></div>
+            <div class="stat-item"><div class="stat-value">${status.players}</div><div class="stat-label">Joueurs Connectés</div></div>
+            <div class="stat-item"><div class="stat-value">${uptimeFormatted}</div><div class="stat-label">Uptime</div></div>
+        `;
+    }
+
+    function renderRoomList(rooms) {
+        const listContainer = document.getElementById('room-list-container');
+        if (rooms.length === 0) {
+            listContainer.innerHTML = '<p class="details-placeholder">Aucune salle active.</p>';
+            return;
+        }
+        listContainer.innerHTML = rooms.sort((a, b) => a.code.localeCompare(b.code)).map(room => `
+            <div class="room-list-item ${room.code === selectedRoomCode ? 'active' : ''}" onclick="selectRoom('${room.code}')">
+                <span>${room.code}</span>
+                <span class="player-count-badge">${room.playerCount}</span>
+            </div>
+        `).join('');
+    }
+
+    function selectRoom(code) {
+        selectedRoomCode = code;
+        renderRoomList(currentStatusData.roomDetails);
+        renderSelectedRoomDetails();
+    }
+
+    function renderSelectedRoomDetails() {
+        const detailsContainer = document.getElementById('room-details-container');
+        if (!selectedRoomCode || !currentStatusData) {
+            detailsContainer.innerHTML = '<p class="details-placeholder">Sélectionnez une salle pour voir les détails.</p>';
+            return;
+        }
+        const room = currentStatusData.roomDetails.find(r => r.code === selectedRoomCode);
+        if (!room) {
+            selectedRoomCode = null; // La salle n'existe plus
+            detailsContainer.innerHTML = '<p class="details-placeholder">Cette salle n\'existe plus. Sélectionnez une autre salle.</p>';
+            return;
+        }
+
+        let statusText, statusClass;
+        if (room.paused) {
+            statusText = 'En Pause'; statusClass = 'status-paused';
+        } else if (room.started) {
+            statusText = `En Jeu (Q${(room.currentQuestionIndex || 0) + 1}/${room.questionsTotal})`; statusClass = 'status-ingame';
+        } else {
+            statusText = 'Lobby'; statusClass = 'status-lobby';
+        }
+
+        const playersHtml = room.players.sort((a,b) => b.score - a.score).map(player => `
+            <tr class="${player.disconnected ? 'disconnected' : ''}">
+                <td>${player.isHost ? '👑' : '👤'} ${player.name}</td>
+                <td style="color: var(--success);">${player.score}</td>
+                <td style="color: var(--danger);">${player.errors}</td>
+                <td style="color: var(--accent);">${player.streak}</td>
+                <td>${player.currentChoice !== null ? `Réponse ${String.fromCharCode(65 + player.currentChoice)}` : 'N/A'}</td>
+            </tr>
+        `).join('');
+
+        const logHtml = room.eventLog.map(log => `<div class="log-entry"><span style="color:var(--primary);">${log.time}</span> - ${log.message}</div>`).join('');
+
+        detailsContainer.innerHTML = `
+            <div class="room-card-header">
+                <div class="room-code">${room.code}</div>
+                <div class="room-status ${statusClass}">${statusText}</div>
+            </div>
+            <h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--text-secondary);">Joueurs</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 1px solid var(--border);">
+                        <th style="padding: 0.5rem;">Nom</th>
+                        <th style="padding: 0.5rem;">Score</th>
+                        <th style="padding: 0.5rem;">Erreurs</th>
+                        <th style="padding: 0.5rem;">Série</th>
+                        <th style="padding: 0.5rem;">Choix Actuel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${playersHtml || '<tr><td colspan="5">Aucun joueur.</td></tr>'}
+                </tbody>
+            </table>
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-secondary);">Journal d'événements</h3>
+            <div class="event-log-container" id="event-log">
+                ${logHtml || '<div class="log-entry">Aucun événement enregistré.</div>'}
+            </div>
+        `;
+
+        // Auto-scroll du journal
+        const logContainer = document.getElementById('event-log');
+        if (logContainer) logContainer.scrollTop = 0;
+    }
+
+</script>
+</body>
+</html>
