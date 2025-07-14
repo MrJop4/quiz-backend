@@ -6,13 +6,13 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-  origin: "https://lovely-chaja-a4be3a.netlify.app"
+  origin: "*" 
 }));
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://lovely-chaja-a4be3a.netlify.app",
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
