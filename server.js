@@ -10,18 +10,36 @@ const questionDatabase = require('./questiondatabase');
 
 const app = express();
 
-// Utilisation d'une variable d'environnement pour l'origine CORS
-// Par défaut, fallback sur localhost pour le développement
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || "*" // Remplacez par l'URL de votre frontend en production
-}));
+// It's better to use a whitelist for CORS origins.
+// This allows you to support your production frontend and local development environments.
+const allowedOrigins = [
+  'https://quiz-backend-v2-prod.up.railway.app/', // <-- frontend URL
+  'http://localhost:8080',                //adjust port if needed
+  'http://127.0.0.1:8080',
+];
+
+// You can still use an environment variable for more flexibility, for example for preview deployments.
+if (process.env.CORS_ORIGIN) {
+    allowedOrigins.push(process.env.CORS_ORIGIN);
+}
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests) or from the whitelist
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST"]
+};
+
+app.use(cors(corsOptions));
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: process.env.CORS_ORIGIN || "*", // Idem ici
-    methods: ["GET", "POST"]
-  }
+  cors: corsOptions // Reuse the same CORS options for Socket.IO
 });
 
 const PORT = process.env.PORT || 3000;
