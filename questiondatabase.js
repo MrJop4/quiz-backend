@@ -66,7 +66,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/400I_1.jpg",
+    "image": "images/vaisseaux/400i_1.jpg",
     "answers": [
       "Origin 400i",
       "Origin 600i",
@@ -5078,7 +5078,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/Buccaneer_-_3.10_-_Flying_over_Microtech.jpg",
+    "image": "images/vaisseaux/buccaneer_-_3.10_-_flying_over_microtech.jpg",
     "answers": [
       "Aegis Gladius",
       "Drake Cutlass Black",
@@ -5091,7 +5091,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/C2_Feature_Style_clouds.jpg",
+    "image": "images/vaisseaux/c2_feature_style_clouds.jpg",
     "answers": [
       "Crusader Hercules M2",
       "Crusader Hercules C2",
@@ -5104,7 +5104,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/Crucible_Repairs.jpg",
+    "image": "images/vaisseaux/crucible_repairs.jpg",
     "answers": [
       "Drake Caterpillar",
       "Anvil Crucible",
@@ -5117,7 +5117,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/125a_Microtech_Firing_-_cropped.jpg",
+    "image": "images/equipements/125a_microtech_firing_-_cropped.jpg",
     "answers": [
       "Origin 100i",
       "Origin 125a",
@@ -5130,7 +5130,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/300i_-_Flying_over_cloudtops_-_cropped.jpg",
+    "image": "images/vaisseaux/300i_-_flying_over_cloudtops_-_cropped.jpg",
     "answers": [
       "Origin 315p",
       "Origin 300i",
@@ -5143,7 +5143,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/600i_-_Legatus_Navium_Edition.jpg",
+    "image": "images/vaisseaux/600i_-_legatus_navium_edition.jpg",
     "answers": [
       "Aegis Reclaimer",
       "Origin 890 Jump",
@@ -5156,7 +5156,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/A1_x2_bombing_ground_vehicle_attackers_-_Cut.jpg",
+    "image": "images/vaisseaux/a1_x2_bombing_ground_vehicle_attackers_-_cut.jpg",
     "answers": [
       "Crusader Hercules M2",
       "Crusader A1 Spirit",
@@ -5169,7 +5169,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/Ares_Inferno_-_Flying_by_asteroids_firing_gun_-_cropped.jpg",
+    "image": "images/vaisseaux/ares_inferno_-_flying_by_asteroids_firing_gun_-_cropped.jpg",
     "answers": [
       "Crusader Ares Inferno",
       "Crusader Ares Ion",
@@ -5182,7 +5182,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce véhicule ?",
-    "image": "images/vaisseaux/Ballista_on_glassland_firing_weapons_-_cropped.jpg",
+    "image": "images/vaisseaux/ballista_on_glassland_firing_weapons_-_cropped.jpg",
     "answers": [
       "Tumbril Nova",
       "Anvil Spartan",
@@ -5195,7 +5195,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce véhicule ?",
-    "image": "images/vaisseaux/ATLS_in_cargo_elevator_-_cropped.jpg",
+    "image": "images/vaisseaux/atls_in_cargo_elevator_-_cropped.jpg",
     "answers": [
       "Greycat ROC",
       "Anvil Ballista",
@@ -5208,7 +5208,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau ?",
-    "image": "images/vaisseaux/Hull-A_taking_off_from_Aberdeen_outpost.jpg",
+    "image": "images/vaisseaux/hull-a_taking_off_from_aberdeen_outpost.jpg",
     "answers": [
       "MISC Hull A",
       "MISC Prospector",
@@ -5221,7 +5221,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau capital en pleine bataille ?",
-    "image": "images/vaisseaux/Idris-P_fighting_group_of_Buccaneers_-_cropped.jpg",
+    "image": "images/vaisseaux/idris-p_fighting_group_of_buccaneers_-_cropped.jpg",
     "answers": [
       "Aegis Reclaimer",
       "RSI Polaris",
@@ -5234,7 +5234,7 @@ module.exports = [
   },
   {
     "question": "Quel porte-vaisseaux géant est visible ici ?",
-    "image": "images/vaisseaux/Kraken_AboveShipMisty_Concept.jpg",
+    "image": "images/vaisseaux/kraken_aboveshipmisty_concept.jpg",
     "answers": [
       "Drake Kraken",
       "Crusader Hercules",
@@ -5247,7 +5247,7 @@ module.exports = [
   },
   {
     "question": "Quel véhicule de luxe est présenté ici sur la plateforme ?",
-    "image": "images/vaisseaux/Lynx_on_platform_in_nighttime_Lorville_-_Cut.jpg",
+    "image": "images/vaisseaux/lynx_on_platform_in_nighttime_lorville_-_cut.jpg",
     "answers": [
       "Tumbril Nova",
       "Greycat ROC",
@@ -5260,7 +5260,7 @@ module.exports = [
   },
   {
     "question": "Quel vaisseau médical aperçoit-on en formation ?",
-    "image": "images/vaisseaux/Cutlass_Red_Squad_Concept.jpg",
+    "image": "images/vaisseaux/cutlass_red_squad_concept.jpg",
     "answers": [
       "Anvil Carrack",
       "Drake Cutlass Red",
@@ -5273,7 +5273,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce véhicule volant en duo sur la planète désertique ?",
-    "image": "images/vaisseaux/Dragonfly_x2_flying_away_from_explosion.jpg",
+    "image": "images/vaisseaux/dragonfly_x2_flying_away_from_explosion.jpg",
     "answers": [
       "Drake Dragonfly",
       "Tumbril Cyclone RC",
@@ -5286,7 +5286,7 @@ module.exports = [
   },
   {
     "question": "Quel chasseur militaire est montré en plein vol dans un champ d’astéroïdes ?",
-    "image": "images/vaisseaux/F7A_MkII_-_Flying_through_debris_field.jpg",
+    "image": "images/vaisseaux/f7a_mkii_-_flying_through_debris_field.jpg",
     "answers": [
       "Anvil F7C Hornet",
       "Anvil F7A Hornet Mk II",
@@ -5299,7 +5299,7 @@ module.exports = [
   },
   {
     "question": "Quel vaisseau cargo survole les nuages sur cette image ?",
-    "image": "images/vaisseaux/Freelancer_MAX_-_flying_above_grey_clouds.jpg",
+    "image": "images/vaisseaux/freelancer_max_-_flying_above_grey_clouds.jpg",
     "answers": [
       "MISC Freelancer DUR",
       "MISC Freelancer MAX",
@@ -5312,7 +5312,7 @@ module.exports = [
   },
   {
     "question": "Quel petit vaisseau de course et de combat est ici en double exemplaire ?",
-    "image": "images/vaisseaux/Fury_LX_x2_flying_low_and_fast_by_a_crashed_M50_-_Cut.jpg",
+    "image": "images/vaisseaux/fury_lx_x2_flying_low_and_fast_by_a_crashed_m50_-_cut.jpg",
     "answers": [
       "Drake Cutter",
       "Mirai Fury LX",
@@ -5325,7 +5325,7 @@ module.exports = [
   },
   {
     "question": "Quel bombardier lourd effectue un tir sur la ville ?",
-    "image": "images/vaisseaux/Hercules_A2_-_Flying_and_firing_over_bombed_Area_18.jpg",
+    "image": "images/vaisseaux/hercules_a2_-_flying_and_firing_over_bombed_area_18.jpg",
     "answers": [
       "Crusader Hercules M2",
       "Crusader Hercules A2",
@@ -5338,7 +5338,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau léger survolant Orison ?",
-    "image": "images/vaisseaux/Spirit_E1_flying_fast_over_Orison_-_cropped.jpg",
+    "image": "images/vaisseaux/spirit_e1_flying_fast_over_orison_-_cropped.jpg",
     "answers": [
       "Crusader Mercury",
       "Crusader Spirit E1",
@@ -5351,7 +5351,7 @@ module.exports = [
   },
   {
     "question": "Quel vaisseau effectue une réparation avec des drones sur cette image ?",
-    "image": "images/vaisseaux/Vulcan_-_Flying_repairing_Eclipse_with_drones.jpg",
+    "image": "images/vaisseaux/vulcan_-_flying_repairing_eclipse_with_drones.jpg",
     "answers": [
       "Anvil Crucible",
       "RSI Apollo",
@@ -5364,7 +5364,7 @@ module.exports = [
   },
   {
     "question": "Quel véhicule blindé est en mouvement dans cette scène ?",
-    "image": "images/vaisseaux/Origin_Rover_Armour_Promo_A_GC_01B-1-Min.jpg",
+    "image": "images/vaisseaux/origin_rover_armour_promo_a_gc_01b-1-min.jpg",
     "answers": [
       "Greycat STV",
       "Origin G12a",
@@ -5390,7 +5390,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce sac à dos utilitaire de Star Citizen ?",
-    "image": "images/equipements/Arden_Backpack.jpg",
+    "image": "images/equipements/arden_backpack.jpg",
     "answers": [
       "Aril Backpack Hazard",
       "Arden-SL Backpack",
@@ -5403,7 +5403,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce casque d’armure léger très reconnaissable ?",
-    "image": "images/equipements/Aves_Armor_Set_-_Top_Half_Cutout.png",
+    "image": "images/equipements/aves_armor_set_-_top_half_cutout.png",
     "answers": [
       "Morozov-SH Helmet",
       "Aves Helmet",
@@ -5416,7 +5416,7 @@ module.exports = [
   },
   {
     "question": "Quelle est cette armure complète colorée ‘Black Cherry’ ?",
-    "image": "images/equipements/Aril_Black_Cherry_Armor_Set_Pledge_Store.jpg",
+    "image": "images/equipements/aril_black_cherry_armor_set_pledge_store.jpg",
     "answers": [
       "ADP-mk4 Red Alert",
       "Aril Armor Set Black Cherry",
@@ -5429,7 +5429,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce fusil d’assaut blanc et bleu ?",
-    "image": "images/equipements/A03_Canuto_-_InGame_Cutout_-_Mesh_BG.jpg",
+    "image": "images/equipements/a03_canuto_-_ingame_cutout_-_mesh_bg.jpg",
     "answers": [
       "Kastak Arms Karna",
       "Behring P4-AR",
@@ -5442,7 +5442,7 @@ module.exports = [
   },
   {
     "question": "Quelle est cette armure lourde portée sur MicroTech ?",
-    "image": "images/equipements/ADP_armor_set.jpg",
+    "image": "images/equipements/adp_armor_set.jpg",
     "answers": [
       "ADP-mk4",
       "Morozov-SH Stormfall",
@@ -5455,7 +5455,7 @@ module.exports = [
   },
   {
     "question": "Quel sac industriel jaune est visible ici ?",
-    "image": "images/equipements/Aril_Backpack_-_Hazard.png",
+    "image": "images/equipements/aril_backback_-_hazard.png",
     "answers": [
       "PyroTec Mining Pack",
       "Aril Backpack Hazard",
@@ -5468,7 +5468,7 @@ module.exports = [
   },
   {
     "question": "Quelle est cette armure légère de soldat ?",
-    "image": "images/equipements/Adp_black_02_fandom.jpg",
+    "image": "images/equipements/adp_black_02_fandom.jpg",
     "answers": [
       "ADP-mk4 Black",
       "Morozov-SH Stormfall",
@@ -5481,7 +5481,7 @@ module.exports = [
   },
   {
     "question": "Quel set d’armure complet de style rouge/or est-ce ?",
-    "image": "images/equipements/Arden-SL_-_Balefire.png",
+    "image": "images/equipements/arden-sl_-_balefire.png",
     "answers": [
       "Morozov-SH Helmet",
       "Aril Armor Set Hazard",
@@ -5494,7 +5494,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce sac à dos militaire volumineux ?",
-    "image": "images/equipements/Morozov-CH_Backpack_Terracotta_-_Store_image.jpg",
+    "image": "images/equipements/morozov-ch_backpack_terracotta_-_store_image.jpg",
     "answers": [
       "RRS Fieldlite Backpack",
       "MacFlex Backpack Rucksack",
@@ -5507,7 +5507,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce fusil d’assaut de Behring vu ici ?",
-    "image": "images/equipements/P4-AR_Boneyard.png",
+    "image": "images/equipements/p4-ar_boneyard.png",
     "answers": [
       "P4-AR",
       "Gemini S71",
@@ -5520,7 +5520,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce fusil automatique compact à crosse repliable ?",
-    "image": "images/equipements/P8-AR_Rifle.png",
+    "image": "images/equipements/p8-ar_rifle.png",
     "answers": [
       "Kastak Arms Karna",
       "P8-AR",
@@ -5533,7 +5533,7 @@ module.exports = [
   },
   {
     "question": "Quel est le nom de cette combinaison spatiale ?",
-    "image": "images/equipements/Beacon_US_Base_-_SCT_BG.jpg",
+    "image": "images/equipements/beacon_us_base_-_sct_bg.jpg",
     "answers": [
       "Beacon Undersuit",
       "Novikov Expedition",
@@ -5546,7 +5546,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce sac à dos orange dédié à l'exploration spatiale ?",
-    "image": "images/equipements/Cataby_Backpack_MPUV-1C_Edition_-_SCT_BG.png",
+    "image": "images/equipements/cataby_backpack_mpuv-1c_edition_-_sct_bg.png",
     "answers": [
       "Cataby Backpack MPUV-1C Edition",
       "Aril Backpack Hazard",
@@ -5559,7 +5559,7 @@ module.exports = [
   },
   {
     "question": "Quel ensemble d’armure voyons-nous en gros plan sur les jambes ?",
-    "image": "images/equipements/Citadel_armor_set_-_Legs_close_up.jpg",
+    "image": "images/equipements/citadel_armor_set_-_legs_close_up.jpg",
     "answers": [
       "Citadel Armor Set",
       "Artemex Armor Set",
@@ -5585,7 +5585,7 @@ module.exports = [
   },
   {
     "question": "Quel outil industriel jaune à rayon tracteur est visible ici ?",
-    "image": "images/equipements/Greycat_Industrial_Tractor_Beam.png",
+    "image": "images/equipements/greycat_industrial_tractor_beam.png",
     "answers": [
       "Greycat Industrial Tractor Beam",
       "PyroTec Mining Tool",
@@ -5598,7 +5598,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce sac de randonnée pratique pour l’exploration ?",
-    "image": "images/equipements/MacFlex_Backpack_-_Rucksack.png",
+    "image": "images/equipements/macflex_backback_-_rucksack.png",
     "answers": [
       "MacFlex Backpack Rucksack",
       "Morozov-CH Backpack",
@@ -5611,7 +5611,7 @@ module.exports = [
   },
   {
     "question": "Quelle est cette arme à l’aspect tactique personnalisée ?",
-    "image": "images/equipements/Parallax__Shock_Trooper__Assault_Rifle.png",
+    "image": "images/equipements/parallax__shock_trooper__assault_rifle.png",
     "answers": [
       "Parallax Shock Trooper",
       "FS-9 LMG",
@@ -5624,7 +5624,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce sac à dos robuste conçu pour l’environnement extrême ?",
-    "image": "images/equipements/Pembroke_Backpack.png",
+    "image": "images/equipements/pembroke_-_backback.png",
     "answers": [
       "Morozov-CH Backpack",
       "Aril Backpack Hazard",
@@ -5637,7 +5637,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce fusil d’assaut rouge et noir de Gemini ?",
-    "image": "images/equipements/S71_1.jpg",
+    "image": "images/equipements/s71_1.jpg",
     "answers": [
       "Gemini S71 Bullseye",
       "Gemini A03 Canuto",
@@ -5715,7 +5715,7 @@ module.exports = [
   },
   {
     "question": "Comment se nomme cette espèce extraterrestre alliée de l’UEE, reconnaissable à son armure élégante et son visage élancé ?",
-    "image": "images/aliens/Xian_1.jpg",
+    "image": "images/aliens/xian_1.jpg",
     "answers": [
       "Tevarin",
       "Xi'an",
