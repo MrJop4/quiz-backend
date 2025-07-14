@@ -118,7 +118,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce vaisseau alien ?",
-    "image": "images/vaisseaux/sylen_1.jpg",
+    "image": "images/vaisseaux/syulen_1.jpg",
     "answers": [
       "Aopoa Khartu-al",
       "Aopoa Nox",
@@ -5247,7 +5247,7 @@ module.exports = [
   },
   {
     "question": "Quel véhicule de luxe est présenté ici sur la plateforme ?",
-    "image": "images/vaisseaux/Lynx_on_platform_in_nightime_Lorville_-_Cut.jpg",
+    "image": "images/vaisseaux/Lynx_on_platform_in_nighttime_Lorville_-_Cut.jpg",
     "answers": [
       "Tumbril Nova",
       "Greycat ROC",
@@ -5455,7 +5455,7 @@ module.exports = [
   },
   {
     "question": "Quel sac industriel jaune est visible ici ?",
-    "image": "images/equipements/Aril_Backback_-_Hazard.png",
+    "image": "images/equipements/Aril_Backpack_-_Hazard.png",
     "answers": [
       "PyroTec Mining Pack",
       "Aril Backpack Hazard",
@@ -5598,7 +5598,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce sac de randonnée pratique pour l’exploration ?",
-    "image": "images/equipements/MacFlex_Backback_-_Rucksack.png",
+    "image": "images/equipements/MacFlex_Backpack_-_Rucksack.png",
     "answers": [
       "MacFlex Backpack Rucksack",
       "Morozov-CH Backpack",
@@ -5624,7 +5624,7 @@ module.exports = [
   },
   {
     "question": "Quel est ce sac à dos robuste conçu pour l’environnement extrême ?",
-    "image": "images/equipements/Pembroke_-_Backback.png",
+    "image": "images/equipements/Pembroke_Backpack.png",
     "answers": [
       "Morozov-CH Backpack",
       "Aril Backpack Hazard",
