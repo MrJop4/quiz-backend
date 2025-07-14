@@ -125,7 +125,7 @@ try {
 
 } catch (error) {
   if (error.code === 'ENOENT') {
-    console.error(`\n❌ ERROR: The 'images' directory was not found. Make sure you run this script from the project root 'quiz-backend'.`);
+    console.error(`\n❌ ERROR: The 'images' directory was not found. Make sure you run this script from the project root 'PolyQuiz'.`);
   } else {
     console.error('\n❌ An unexpected error occurred:', error);
   }

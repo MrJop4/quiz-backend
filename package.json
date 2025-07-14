@@ -1,5 +1,5 @@
 {
-  "name": "quiz-backend",
+  "name": "PolyQuiz SC",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
