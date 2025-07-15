@@ -1,3 +1,5 @@
+console.log('--- Canary is alive! Deployment successfully updated. ---');
+require('dotenv').config();
 const http = require('http');
 const path = require('path');
 const express = require('express');
