@@ -1,39 +1,19 @@
-console.log('--- Canary is alive! Deployment successfully updated. ---');
-require('dotenv').config();
 const http = require('http');
-const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const { Server } = require('socket.io');
-const helmet = require('helmet');
+
 const config = require('./src/config');
 const apiRouter = require('./src/api');
+const jsonErrorHandler = require('./src/middleware/errorHandler');
 const initializeSocket = require('./src/socket');
 
 // --- App & Server Initialization ---
 const app = express();
 const server = http.createServer(app);
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "default-src": ["'self'"],
-        // Allow scripts from your domain, inline scripts, and required CDNs
-        "script-src": ["'self'", "'unsafe-inline'", "https://cdn.socket.io", "https://cdnjs.cloudflare.com"],
-        // Allow styles from your domain, inline styles, and Google Fonts
-        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        // Allow images from your domain and from data URIs
-        "img-src": ["'self'", "data:"],
-        // Allow API calls, and WebSocket connections to your domain
-        "connect-src": ["'self'", "ws:", "wss:"],
-        // Allow fonts from Google Fonts
-        "font-src": ["'self'", "https://fonts.gstatic.com"],
-      },
-    },
-  })
-);
+
 // --- CORS Configuration ---
+// Your commit history shows you've worked on this. It's good practice.
 const corsOptions = {
   origin: config.allowedOrigins,
   optionsSuccessStatus: 200
@@ -44,24 +24,21 @@ app.use(cors(corsOptions));
 app.use(express.json()); // for parsing application/json
 
 // --- API Routes ---
+// Health check and difficulties endpoints before static middleware, as you did.
 app.use('/api', apiRouter);
 
 // --- Static Files ---
-// Health check and difficulties endpoints are now before static middleware
 // This addresses your concern about serving files to clients.
-// All assets in `src/public` are served directly.
-app.use(express.static(path.join(__dirname, 'src', 'public')));
-
-// --- SPA Catch-all Route ---
-// This route should be after all other routes and static middleware.
-// It serves the main HTML file for any non-API routes.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'src', 'public', 'index.html'));
-});
+// All assets in `public` are served directly.
+app.use(express.static('public'));
 
 // --- Socket.IO Initialization ---
 const io = new Server(server, { cors: corsOptions });
 initializeSocket(io);
+
+// --- Error Handling Middleware ---
+// This must be the LAST middleware. It catches any errors that occur in the route handlers.
+app.use(jsonErrorHandler);
 
 // --- Start Server ---
 server.listen(config.port, () => {

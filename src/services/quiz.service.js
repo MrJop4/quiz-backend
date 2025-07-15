@@ -15,12 +15,11 @@ const shuffle = (a) => {
 exports.getAvailableDifficulties = () => {
   // Use a map to aggregate difficulties and count questions.
   const difficultyMap = questionDatabase.reduce((acc, question) => {
-    const { difficulty } = question;
-
-    // Skip any questions that might not have a difficulty set.
-    if (!difficulty) {
+    // Ensure the question and its difficulty are valid before processing
+    if (!question || typeof question.difficulty !== 'string' || question.difficulty.trim() === '') {
       return acc;
     }
+    const difficulty = question.difficulty;
 
     // If we haven't seen this difficulty before, initialize it.
     if (!acc[difficulty]) {
