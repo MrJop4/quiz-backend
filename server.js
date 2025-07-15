@@ -49,14 +49,14 @@ app.use('/api', apiRouter);
 // --- Static Files ---
 // Health check and difficulties endpoints are now before static middleware
 // This addresses your concern about serving files to clients.
-// All assets in `public` are served directly.
-app.use(express.static('public'));
+// All assets in `src/public` are served directly.
+app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 // --- SPA Catch-all Route ---
 // This route should be after all other routes and static middleware.
 // It serves the main HTML file for any non-API routes.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'src', 'public', 'index.html'));
 });
 
 // --- Socket.IO Initialization ---
