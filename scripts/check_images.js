@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const questionDatabase = require('./questiondatabase.js');
+const questionDatabase = require('../questiondatabase.js');
 
 // --- Helper function to calculate similarity ---
 // Levenshtein distance: a measure of the difference between two sequences.
@@ -37,7 +37,7 @@ const dbImages = new Set(
 console.log(`\n🔎 Found ${dbImages.size} unique image references in the database.`);
 
 // 2. Get all image files from the filesystem
-const imageDir = path.join(__dirname, 'images');
+const imageDir = path.join(__dirname, '..', 'public', 'images'); // Path relative to script location
 let fsImages = new Set();
 
 function findImagesInDir(directory) {
@@ -50,7 +50,7 @@ function findImagesInDir(directory) {
         findImagesInDir(fullPath);
       } else if (/\.(jpg|jpeg|png|gif)$/i.test(file)) {
         // Get path relative to project root and normalize
-        const relativePath = path.relative(__dirname, fullPath);
+        const relativePath = path.relative(path.join(__dirname, '..'), fullPath);
         fsImages.add(path.normalize(relativePath));
       }
     }
@@ -125,7 +125,7 @@ try {
 
 } catch (error) {
   if (error.code === 'ENOENT') {
-    console.error(`\n❌ ERROR: The 'images' directory was not found. Make sure you run this script from the project root 'PolyQuiz'.`);
+    console.error(`\n❌ ERROR: The 'public/images' directory was not found. Make sure you run this script from the project root.`);
   } else {
     console.error('\n❌ An unexpected error occurred:', error);
   }

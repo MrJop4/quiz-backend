@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node check_images.js && node server.js"
+    "start": "node server.js",
+    "dev": "node scripts/check_images.js && node server.js",
+    "validate:images": "node scripts/check_images.js"
   },
   "dependencies": {
     "cors": "~2.8.5",
-    "express": "~5.1.0",
-    "socket.io": "~4.8.1",
-    "uuid": "~11.1.0"
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "uuid": "^9.0.1"
   }
 }
