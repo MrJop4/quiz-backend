@@ -1,4 +1,5 @@
 const http = require('http');
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const { Server } = require('socket.io');
@@ -30,6 +31,12 @@ app.use('/api', apiRouter);
 // This addresses your concern about serving files to clients.
 // All assets in `public` are served directly.
 app.use(express.static('public'));
+
+// --- Serve Frontend Entrypoint ---
+// This route handles requests to the root and sends the main HTML file.
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // --- Socket.IO Initialization ---
 const io = new Server(server, { cors: corsOptions });
