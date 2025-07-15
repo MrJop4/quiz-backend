@@ -19,16 +19,16 @@ app.use(
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         "default-src": ["'self'"],
-        // Allow scripts from your domain. Add other domains if you use external scripts.
-        "script-src": ["'self'"],
-        // Allow styles from your domain and inline styles.
-        // The 'unsafe-inline' is needed for style attributes or <style> tags.
-        // For higher security, you can remove it and use hashes or nonces.
-        "style-src": ["'self'", "'unsafe-inline'"],
-        // Allow images from your domain and from data URIs (e.g., base64 encoded images).
+        // Allow scripts from your domain, inline scripts, and required CDNs
+        "script-src": ["'self'", "'unsafe-inline'", "https://cdn.socket.io", "https://cdnjs.cloudflare.com"],
+        // Allow styles from your domain, inline styles, and Google Fonts
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        // Allow images from your domain and from data URIs
         "img-src": ["'self'", "data:"],
-        // Allow API calls, and WebSocket connections to your domain.
+        // Allow API calls, and WebSocket connections to your domain
         "connect-src": ["'self'", "ws:", "wss:"],
+        // Allow fonts from Google Fonts
+        "font-src": ["'self'", "https://fonts.gstatic.com"],
       },
     },
   })
