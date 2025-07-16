@@ -29,8 +29,11 @@ app.use('/api', apiRouter);
 
 // --- Static Files ---
 // This addresses your concern about serving files to clients.
+// First, serve files from the main public directory (for index.html, etc.)
 app.use(express.static(path.join(__dirname, 'src', 'public')));
-// Serve static files like qr-code.png
+
+// Then, serve files from the project root. This makes qr-code.png,
+// and the 'images' and 'avatar' folders accessible if they are at the root.
 app.use(express.static(__dirname));
 
 
