@@ -30,6 +30,9 @@ app.use('/api', apiRouter);
 // --- Static Files ---
 // This addresses your concern about serving files to clients.
 app.use(express.static(path.join(__dirname, 'src', 'public')));
+// Serve static files like qr-code.png
+app.use(express.static(__dirname));
+
 
 // --- SPA Catch-all Route ---
 // This must be the LAST GET route before error handlers. It sends the index.html
