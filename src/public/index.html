@@ -2173,24 +2173,20 @@ window.addEventListener('DOMContentLoaded', function() {
   logDebug('✅ Player ID:', playerId);
 
   // Fetch and populate difficulties for the host
-  fetch(socket.io.uri + '/difficulties')
+  fetch('/api/difficulties') // Use a relative path to hit the correct API endpoint
     .then(response => response.json())
     .then(difficulties => {
         const difficultySelect = document.getElementById('input-difficulty');
         if (difficultySelect) {
-            difficulties.forEach(difficulty => {
-                console.log(difficulty);
+            // The API now returns an array of objects, e.g., [{ id: 'normal', name: 'Normal', ... }]
+            difficulties.forEach(difficultyObj => {
                 const option = document.createElement('option');
-                option.value = difficulty;
-                // Capitalize first letter for a nicer display
-                option.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+                option.value = difficultyObj.id;
+                option.textContent = difficultyObj.name; // Use the pre-formatted name from the API
                 difficultySelect.appendChild(option);
             });
         }
-    }).then(response => {
-        console.log("difficulties", response);
-    }
-    )
+    })
     .catch(error => console.error('Error fetching difficulties:', error));
 });
 
