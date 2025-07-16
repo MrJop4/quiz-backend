@@ -1,5 +1,6 @@
 const http = require('http');
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const { Server } = require('socket.io');
 
@@ -24,13 +25,18 @@ app.use(cors(corsOptions));
 app.use(express.json()); // for parsing application/json
 
 // --- API Routes ---
-// Health check and difficulties endpoints before static middleware, as you did.
 app.use('/api', apiRouter);
 
 // --- Static Files ---
 // This addresses your concern about serving files to clients.
-// All assets in `public` are served directly.
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'src', 'public')));
+
+// --- SPA Catch-all Route ---
+// This must be the LAST GET route before error handlers. It sends the index.html
+// for any request that doesn't match the API or a static file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'public', 'index.html'));
+});
 
 // --- Socket.IO Initialization ---
 const io = new Server(server, { cors: corsOptions });
