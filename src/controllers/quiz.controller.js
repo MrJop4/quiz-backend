@@ -4,7 +4,7 @@ exports.getHealth = (req, res) => {
   res.status(200).json({ status: 'ok' });
 };
 
-exports.getDifficulties = (req, res) => {
+exports.getDifficulties = (req, res, next) => {
   const difficulties = quizService.getAvailableDifficulties();
   res.status(200).json(difficulties);
 };

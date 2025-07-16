@@ -12,11 +12,15 @@ const shuffle = (a) => {
   return a;
 };
 
-exports.getAvailableDifficulties = () => {
+exports.getAvailableDifficulties = (req, res, next) => {
   // Use a map to aggregate difficulties and count questions.
   const difficultyMap = questionDatabase.reduce((acc, question) => {
     // Ensure the question and its difficulty are valid before processing
     if (!question || typeof question.difficulty !== 'string' || question.difficulty.trim() === '') {
+        console.warn(
+            "Invalid question format detected.  Please review your question database.",
+            question
+        );
       return acc;
     }
     const difficulty = question.difficulty;
@@ -37,7 +41,7 @@ exports.getAvailableDifficulties = () => {
   }, {});
 
   // Convert the map of difficulties into an array for the API response.
-  return Object.values(difficultyMap);
+    return Object.values(difficultyMap);
 };
 
 exports.getQuestionsForDifficulty = (difficulty, maxQuestions = 10) => {

@@ -2179,6 +2179,7 @@ window.addEventListener('DOMContentLoaded', function() {
         const difficultySelect = document.getElementById('input-difficulty');
         if (difficultySelect) {
             difficulties.forEach(difficulty => {
+                console.log(difficulty);
                 const option = document.createElement('option');
                 option.value = difficulty;
                 // Capitalize first letter for a nicer display
@@ -2186,7 +2187,10 @@ window.addEventListener('DOMContentLoaded', function() {
                 difficultySelect.appendChild(option);
             });
         }
-    })
+    }).then(response => {
+        console.log("difficulties", response);
+    }
+    )
     .catch(error => console.error('Error fetching difficulties:', error));
 });
 
