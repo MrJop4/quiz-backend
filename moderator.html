@@ -276,12 +276,13 @@
 </div>
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
 <script>
     const socket = io('https://polyquiz-sc.up.railway.app/');
 
     let selectedRoomCode = null;
     let currentStatusData = null;
-
+    let enableDebugLogs = false;
     const authOverlay = document.getElementById('auth-overlay');
     const passwordInput = document.getElementById('password-input');
     const passwordSubmit = document.getElementById('password-submit');
@@ -320,6 +321,88 @@
         passwordSubmit.disabled = false;
         passwordSubmit.textContent = 'Valider';
     });
+
+    // Secret phrase for debug
+    const DEBUG_TRIGGER_PHRASE = "debug"; // Phrase pour déclencher la demande de mdp
+    let typedPhraseBuffer = "";
+    const MAX_BUFFER_LENGTH = DEBUG_TRIGGER_PHRASE.length + 20; // Assez pour la phrase + mdp
+
+    // Helper function for conditional logging
+    function logDebug(...args) {
+      if (enableDebugLogs) {
+        console.log(...args);
+      }
+    }
+
+    // Keydown listener for the secret phrase
+    document.addEventListener('keydown', (event) => {
+      // Only listen if not in an input field
+      const activeElement = document.activeElement;
+      if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+
+      // Append key to buffer
+      typedPhraseBuffer += key;
+
+      // Keep buffer length in check
+      if (typedPhraseBuffer.length > MAX_BUFFER_LENGTH) {
+        typedPhraseBuffer = typedPhraseBuffer.substring(typedPhraseBuffer.length - MAX_BUFFER_LENGTH);
+      }
+
+      // Check if buffer matches secret phrase
+      if (typedPhraseBuffer.endsWith(DEBUG_TRIGGER_PHRASE)) {
+        showDebugPasswordPrompt();
+        typedPhraseBuffer = ""; // Reset buffer
+      }
+    });
+
+    // Show the Styled Password prompt
+    function showDebugPasswordPrompt() {
+        const authOverlay = document.getElementById('auth-overlay');
+        authOverlay.classList.add('visible');
+    }
+
+    //Hide the styled password prompt
+    function hideDebugPasswordPrompt() {
+        const authOverlay = document.getElementById('auth-overlay');
+        authOverlay.classList.remove('visible');
+    }
+
+    socket.on('debugToggled', ({ enabled, message }) => {
+      enableDebugLogs = enabled;
+      logDebug(message);
+      passwordInput.value = "";
+      hideDebugPasswordPrompt();
+      // Optionally show a success/failure message to the user
+    });
+
+
+    passwordSubmit.onclick = () => {
+        const password = passwordInput.value;
+
+        if (password && !passwordSubmit.disabled) {
+            passwordSubmit.disabled = true;
+            passwordSubmit.textContent = 'Vérification...';
+            authError.textContent = '';
+            socket.emit('validateDebug', { password: password });
+        }
+    };
+
+    passwordInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            passwordSubmit.click();
+        }
+    });
+
+    socket.on('moderatorAuthSuccess', () => {
+        console.log('Authentification réussie.');
+        hideDebugPasswordPrompt(); // Hide after successful auth
+    });
+
+
 
     socket.on('disconnect', () => {
         console.log('Déconnecté du serveur.');
@@ -456,6 +539,10 @@
         const logContainer = document.getElementById('event-log');
         if (logContainer) logContainer.scrollTop = 0;
     }
+
+    // Make sure the overlay is initially hidden
+    authOverlay.classList.remove('visible');
+
 
 </script>
 </body>
