@@ -289,7 +289,10 @@
 
     passwordSubmit.onclick = () => {
         const password = passwordInput.value;
-        if (password) {
+        // Désactiver le bouton pour éviter les clics multiples
+        if (password && !passwordSubmit.disabled) {
+            passwordSubmit.disabled = true;
+            passwordSubmit.textContent = 'Vérification...';
             authError.textContent = '';
             socket.emit('registerModerator', { password: password });
         }
@@ -314,6 +317,8 @@
         console.error('Échec de l\'authentification:', message);
         authError.textContent = message;
         passwordInput.value = '';
+        passwordSubmit.disabled = false;
+        passwordSubmit.textContent = 'Valider';
     });
 
     socket.on('disconnect', () => {
@@ -323,6 +328,8 @@
         document.getElementById('room-details-container').innerHTML = '';
         authOverlay.classList.add('visible');
         authError.textContent = 'Déconnecté. Veuillez vous ré-authentifier.';
+        passwordSubmit.disabled = false;
+        passwordSubmit.textContent = 'Valider';
     });
 
     socket.on('serverStatusUpdate', (status) => {
