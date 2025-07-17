@@ -28,162 +28,7 @@ const SECRET_PHRASE = "violettedebug";
 let typedPhraseBuffer = "";
 const MAX_BUFFER_LENGTH = SECRET_PHRASE.length;
 
-// Helper function for conditional logging
-function logDebug(...args) {
-  if (enableDebugLogs) {
-    console.log(...args);
-  }
-}
-
-// Keydown listener for the secret phrase
-document.addEventListener('keydown', (event) => {
-  // Only listen if not in an input field
-  const activeElement = document.activeElement;
-  if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
-    return;
-  }
-
-  const key = event.key.toLowerCase();
-
-  // Append key to buffer
-  typedPhraseBuffer += key;
-
-  // Keep buffer length in check
-  if (typedPhraseBuffer.length > MAX_BUFFER_LENGTH) {
-    typedPhraseBuffer = typedPhraseBuffer.substring(typedPhraseBuffer.length - MAX_BUFFER_LENGTH);
-  }
-
-  // Check if buffer matches secret phrase
-  if (typedPhraseBuffer.endsWith(SECRET_PHRASE)) {
-    enableDebugLogs = !enableDebugLogs; // Toggle
-    typedPhraseBuffer = ""; // Reset buffer
-    showCustomAlert(`Mode Débogage ${enableDebugLogs ? 'ACTIVÉ' : 'DÉSACTIVÉ'}`, null, false, 2000); // Temporary alert
-    logDebug(`Mode Débogage ${enableDebugLogs ? 'activé' : 'désactivé'}`);
-  }
-});
-
-// ===== LOADING OVERLAY FUNCTIONS =====
-function showLoading(message = 'Chargement...') {
-  const alertId = 'custom-alert-modal';
-  let modal = document.getElementById(alertId);
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = alertId;
-    modal.style = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100000;
-    `;
-    modal.innerHTML = `
-      <div style="
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 2rem;
-        max-width: 400px;
-        text-align: center;
-        box-shadow: var(--glow) rgba(0, 212, 255, 0.2);
-      ">
-        <p style="font-size: 1.2em; margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
-        <div style="display: flex; justify-content: center; gap: 1rem;">
-          <button id="alert-ok-btn" class="btn">OK</button>
-          ${isConfirm ? '<button id="alert-cancel-btn" class="btn btn-secondary">Annuler</button>' : ''}
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  }
-  const overlay = document.getElementById('loading-overlay');
-  const msgElement = document.getElementById('loading-message');
-  if (msgElement) msgElement.textContent = message;
-  if (overlay) overlay.classList.add('visible');
-}
-
-function hideLoading() {
-  const overlay = document.getElementById('loading-overlay');
-  if (overlay) overlay.classList.remove('visible');
-}
-
-// ===== PAUSE OVERLAY FUNCTIONS =====
-function showPauseOverlay(message = "L'hôte s'est déconnecté. La partie est en pause...") {
-  const overlay = document.getElementById('pause-overlay');
-  const msgElement = document.getElementById('pause-message');
-  if (msgElement) msgElement.textContent = message;
-  if (overlay) overlay.classList.add('visible');
-}
-
-function hidePauseOverlay() {
-  const overlay = document.getElementById('pause-overlay');
-  if (overlay) overlay.classList.remove('visible');
-}
-
-// ===== SYSTÈME D'AVATARS =====
-function createPlayerItemWithAvatar(player) {
-  return `
-    <li class="player-item">
-      <div class="player-avatar ${player.isHost ? 'host' : ''}">
-        <img src="${getAvatarPath(player.avatar || 1)}" alt="Avatar ${player.name}">
-      </div>
-      <div style="flex: 1;">
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          ${player.isHost ? '<span class="score-icon" style="background: gold;">👑</span>' : ''}
-          <span>${player.name}</span>
-        </div>
-        ${player.score !== undefined ? `<div style="font-size: 0.9em; color: var(--text-secondary);">Score: ${player.score}</div>` : ''}
-      </div>
-    </li>
-  `;
-}
-
-function getAvatarPath(avatarId) {
-  return `avatar/perso_${avatarId}.png`;
-}
-
-function getRandomAvatar() {
-  return Math.floor(Math.random() * TOTAL_AVATARS) + 1;
-}
-
-function updateAvatarDisplay(containerId = 'avatar-display', imgId = 'avatar-img') {
-  const imgElement = document.getElementById(imgId);
-  if (imgElement) {
-    imgElement.src = getAvatarPath(selectedAvatar);
-    
-    // Animation de changement
-    const container = document.getElementById(containerId);
-    if (container) {
-      container.style.transform = 'scale(0.9)';
-      setTimeout(() => {
-        container.style.transform = 'scale(1)';
-      }, 150);
-    }
-  }
-}
-
-function setupAvatarSelector(prefix = '') {
-  const prevId = prefix + 'avatar-prev';
-  const nextId = prefix + 'avatar-next';
-  const randomId = prefix + 'avatar-random'; // randomId is defined here, not used directly in the nextBtn.onclick scope.
-  const displayId = prefix + 'avatar-display';
-  const imgId = prefix + 'avatar-img';
-
-  const prevBtn = document.getElementById(prevId);
-  if (prevBtn) prevBtn.onclick = () => { selectedAvatar = selectedAvatar > 1 ? selectedAvatar - 1 : TOTAL_AVATARS; updateAvatarDisplay(displayId, imgId); };
-  const nextBtn = document.getElementById(nextId);
-  if (nextBtn) nextBtn.onclick = () => { selectedAvatar = selectedAvatar < TOTAL_AVATARS ? selectedAvatar + 1 : 1; updateAvatarDisplay(displayId, imgId); }; 
-  const randomBtn = document.getElementById(randomId);
-  if (randomBtn) randomBtn.onclick = () => { selectedAvatar = getRandomAvatar(); updateAvatarDisplay(displayId, imgId); };
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-
-    // ===== FONCTIONS UTILITAIRES =====
+// ===== FONCTIONS UTILITAIRES =====
 function showCustomAlert(message, callback = null, isConfirm = false, duration = 0) {
   const alertId = 'custom-alert-modal';
   let modal = document.getElementById(alertId);
@@ -259,6 +104,160 @@ function showCustomAlert(message, callback = null, isConfirm = false, duration =
     }, duration);
   }
 }
+
+// Helper function for conditional logging
+function logDebug(...args) {
+  if (enableDebugLogs) {
+    console.log(...args);
+  }
+}
+
+// Keydown listener for the secret phrase
+document.addEventListener('keydown', (event) => {
+  // Only listen if not in an input field
+  const activeElement = document.activeElement;
+  if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
+    return;
+  }
+
+  const key = event.key.toLowerCase();
+
+  // Append key to buffer
+  typedPhraseBuffer += key;
+
+  // Keep buffer length in check
+  if (typedPhraseBuffer.length > MAX_BUFFER_LENGTH) {
+    typedPhraseBuffer = typedPhraseBuffer.substring(typedPhraseBuffer.length - MAX_BUFFER_LENGTH);
+  }
+
+  // Check if buffer matches secret phrase
+  if (typedPhraseBuffer.endsWith(SECRET_PHRASE)) {
+    enableDebugLogs = !enableDebugLogs; // Toggle
+    typedPhraseBuffer = ""; // Reset buffer
+    showCustomAlert(`Mode Débogage ${enableDebugLogs ? 'ACTIVÉ' : 'DÉSACTIVÉ'}`, null, false, 2000);
+    logDebug(`Mode Débogage ${enableDebugLogs ? 'activé' : 'désactivé'}`);
+  }
+});
+
+// ===== LOADING OVERLAY FUNCTIONS =====
+function showLoading(message = 'Chargement...') {
+  const alertId = 'custom-alert-modal';
+  let modal = document.getElementById(alertId);
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = alertId;
+    modal.style = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: var(--glow) rgba(0, 212, 255, 0.2);
+      ">
+        <p style="font-size: 1.2em; margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+          <button id="alert-ok-btn" class="btn">OK</button>
+          ${isConfirm ? '<button id="alert-cancel-btn" class="btn btn-secondary">Annuler</button>' : ''}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  const overlay = document.getElementById('loading-overlay');
+  const msgElement = document.getElementById('loading-message');
+  if (msgElement) msgElement.textContent = message;
+  if (overlay) overlay.classList.add('visible');
+}
+
+function hideLoading() {
+  const overlay = document.getElementById('loading-overlay');
+  if (overlay) overlay.classList.remove('visible');
+}
+
+// ===== PAUSE OVERLAY FUNCTIONS =====
+function showPauseOverlay(message = "L'hôte s'est déconnecté. La partie est en pause...") {
+  const overlay = document.getElementById('pause-overlay');
+  const msgElement = document.getElementById('pause-message');
+  if (msgElement) msgElement.textContent = message;
+  if (overlay) overlay.classList.add('visible');
+}
+
+function hidePauseOverlay() {
+  const overlay = document.getElementById('pause-overlay');
+  if (overlay) overlay.classList.remove('visible');
+}
+
+// ===== SYSTÈME D'AVATARS =====
+function getAvatarPath(avatarId) {
+  return `avatar/perso_${avatarId}.png`;
+}
+
+function getRandomAvatar() {
+  return Math.floor(Math.random() * TOTAL_AVATARS) + 1;
+}
+
+function updateAvatarDisplay(containerId = 'avatar-display', imgId = 'avatar-img') {
+  const imgElement = document.getElementById(imgId);
+  if (imgElement) {
+    imgElement.src = getAvatarPath(selectedAvatar);
+    
+    // Animation de changement
+    const container = document.getElementById(containerId);
+    if (container) {
+      container.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        container.style.transform = 'scale(1)';
+      }, 150);
+    }
+  }
+}
+
+function setupAvatarSelector(prefix = '') {
+  const prevId = prefix + 'avatar-prev';
+  const nextId = prefix + 'avatar-next';
+  const randomId = prefix + 'avatar-random'; // randomId is defined here, not used directly in the nextBtn.onclick scope.
+  const displayId = prefix + 'avatar-display';
+  const imgId = prefix + 'avatar-img';
+
+  const prevBtn = document.getElementById(prevId);
+  if (prevBtn) prevBtn.onclick = () => { selectedAvatar = selectedAvatar > 1 ? selectedAvatar - 1 : TOTAL_AVATARS; updateAvatarDisplay(displayId, imgId); };
+  const nextBtn = document.getElementById(nextId);
+  if (nextBtn) nextBtn.onclick = () => { selectedAvatar = selectedAvatar < TOTAL_AVATARS ? selectedAvatar + 1 : 1; updateAvatarDisplay(displayId, imgId); }; 
+  const randomBtn = document.getElementById(randomId);
+  if (randomBtn) randomBtn.onclick = () => { selectedAvatar = getRandomAvatar(); updateAvatarDisplay(displayId, imgId); };
+}
+function createPlayerItemWithAvatar(player) {
+  return `
+    <li class="player-item">
+      <div class="player-avatar ${player.isHost ? 'host' : ''}">
+        <img src="${getAvatarPath(player.avatar || 1)}" alt="Avatar ${player.name}">
+      </div>
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          ${player.isHost ? '<span class="score-icon" style="background: gold;">👑</span>' : ''}
+          <span>${player.name}</span>
+        </div>
+        ${player.score !== undefined ? `<div style="font-size: 0.9em; color: var(--text-secondary);">Score: ${player.score}</div>` : ''}
+      </div>
+    </li>
+  `;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
 
 // ===== GESTION DE LA CONNEXION =====
 socket.on('connect', () => {
@@ -1375,5 +1374,5 @@ function nullifyCurrentQuestion() {
             });
         }
     })
-    .catch(error => console.error('Error fetching difficulties:', error))
+    .catch(error => console.error('Error fetching difficulties:', error));
 });
