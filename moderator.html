@@ -294,7 +294,7 @@
         if (password && !passwordSubmit.disabled) {
             passwordSubmit.disabled = true;
             passwordSubmit.textContent = 'Vérification...';
-            authError.textContent = '';
+            authError.textContent = ''; 
             socket.emit('registerModerator', { password: password });
         }
     };

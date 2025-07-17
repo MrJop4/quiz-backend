@@ -7,7 +7,6 @@ exports.validateDebugPassword = (io, socket) => {
       console.log(`[Socket] Tentative d'activation du mode débogage refusée pour ${socket.id}`);
       socket.emit('debugToggled', { enabled: false, message: 'Mot de passe de débogage incorrect.' });
     }
-    
   };
 
   socket.on('validateDebug', validateDebug);
