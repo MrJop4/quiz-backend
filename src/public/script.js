@@ -276,7 +276,7 @@ function clearSessionData() {
 }
 
 // ===== GESTION DES BOUTONS PRINCIPAUX =====
-document.getElementById('btn-create-room').onclick = function() {
+document.addEventListener('DOMContentLoaded', function() {document.getElementById('btn-create-room').onclick = function() {
   isHost = true;
   selectedAvatar = getRandomAvatar();
   document.getElementById('lobby-choice').style.display = "none";
@@ -1361,4 +1361,5 @@ window.addEventListener('DOMContentLoaded', function() {  // Pré-remplir les ch
     })
     .catch(error => console.error('Error fetching difficulties:', error))
 
+});
 });
