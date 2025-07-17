@@ -216,7 +216,7 @@ function showCustomAlert(message, callback = null, isConfirm = false, duration =
       <div style="
         background: var(--card-bg);
         border: 1px solid var(--border);
-        border-radius: 1rem;
+        border-radius: 1rem;;
         padding: 2rem;
         max-width: 400px;
         text-align: center;
@@ -233,14 +233,14 @@ function showCustomAlert(message, callback = null, isConfirm = false, duration =
 
     document.getElementById('alert-ok-btn').onclick = () => {
       modal.remove();
-      if (callback) callback(true);
+      if (callback) callback(true, document.getElementById('alert-input') ? document.getElementById('alert-input').value : undefined);
     };
 
     if (isConfirm) {
       document.getElementById('alert-cancel-btn').onclick = () => {
         modal.remove();
         if (callback) callback(false);
-      };
+      }
     }
   } else {
     modal.querySelector('p').textContent = message;
