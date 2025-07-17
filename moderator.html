@@ -386,6 +386,7 @@
     });
 
 
+
     passwordInput.addEventListener('keyup', (event) => {
         if (event.key === 'Enter') {
             passwordSubmit.click();
@@ -539,6 +540,73 @@
     authOverlay.classList.remove('visible');
 
             // ===== FONCTIONS UTILITAIRES =====
+function showCustomAlert(message, callback = null, isConfirm = false, duration = 0) {
+  const alertId = 'custom-alert-modal';
+  let modal = document.getElementById(alertId);
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = alertId;
+    modal.style = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 1rem;;
+        padding: 2rem;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: var(--glow) rgba(0, 212, 255, 0.2);
+      ">
+        <p style="font-size: 1.2em; margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
+        ${isConfirm ? '<input type="password" id="alert-input" class="input" placeholder="Mot de passe" style="margin-bottom: 1rem; color: white; background: var(--dark-bg); border: 2px solid var(--border); border-radius: 0.75rem; padding: 1rem 1.5rem; font-size: 1.1rem; transition: all 0.3s ease; width: 100%; box-sizing: border-box;">' : ''}
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+          <button id="alert-ok-btn" class="btn">OK</button>
+          ${isConfirm ? '<button id="alert-cancel-btn" class="btn btn-secondary">Annuler</button>' : ''}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('alert-ok-btn').onclick = () => {
+      modal.remove();
+      if (callback) callback(true, document.getElementById('alert-input') ? document.getElementById('alert-input').value : undefined);
+    };
+
+    if (isConfirm) {
+      document.getElementById('alert-cancel-btn').onclick = () => {
+        modal.remove();
+        if (callback) callback(false);
+      }
+    }
+
+  } else {
+    modal.querySelector('p').textContent = message;
+    modal.style.display = 'flex';
+  }
+
+  if (duration > 0 && !isConfirm) { // Auto-fermer si c'est une alerte simple avec durée
+    setTimeout(() => {
+      if (modal && modal.parentNode) {
+        modal.remove();
+      }
+    }, duration);
+  }
+}
+</script>
+
+<script>
+  // ===== FONCTIONS UTILITAIRES =====
 function showCustomAlert(message, callback = null, isConfirm = false, duration = 0) {
   const alertId = 'custom-alert-modal';
   let modal = document.getElementById(alertId);
