@@ -1,5 +1,6 @@
 const process = require('process');
 
+
 module.exports = (io, socket) => {
   const registerModerator = ({ password }) => {
     const expectedPassword = process.env.MODERATOR_PASSWORD;
