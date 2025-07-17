@@ -57,16 +57,18 @@ document.addEventListener('keydown', (event) => {
   if (typedPhraseBuffer.endsWith(DEBUG_TRIGGER_PHRASE)) {
     const password = prompt("Veuillez entrer le mot de passe de débogage :");
     if (password) {  
-      const alertModal = document.createElement('div');
-      alertModal.style = `
-          position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-          background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center;
-          z-index: 100000; color: var(--text-primary);`;
-      alertModal.innerHTML = `
-          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; max-width: 400px; text-align: center; box-shadow: var(--glow) rgba(0, 212, 255, 0.2);">
-            Veuillez entrer le mot de passe de débogage :
-          </div>`;
-      socket.emit('validateDebug', { password });
+      // Afficher le modal de confirmation
+      showCustomAlert(
+        "Veuillez entrer le mot de passe de débogage :",
+        (confirmed, password) => {
+          if (confirmed && password) {
+            socket.emit('validateDebug', { password });
+          } else {
+            // Gérer l'annulation ou l'absence de mot de passe
+          }
+        },
+        true // Indique que c'est une alerte de confirmation
+      );
     }
     typedPhraseBuffer = ""; // Reset buffer
   }
