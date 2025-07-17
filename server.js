@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const { Server } = require('socket.io');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const config = require('./src/config');
 const apiRouter = require('./src/api');
@@ -10,6 +12,12 @@ const jsonErrorHandler = require('./src/middleware/errorHandler');
 const initializeSocket = require('./src/socket');
 
 // --- App + Server Init ---
+if (!process.env.MODERATOR_PASSWORD || !process.env.DEBUG_PASSWORD) {
+    console.error('ERROR! Missing MODERATOR_PASSWORD or DEBUG_PASSWORD environment variables. Ensure .env file is configured.');
+    process.exit(1);
+}
+const moderatorPassword = process.env.MODERATOR_PASSWORD;
+const debugPassword = process.env.DEBUG_PASSWORD;
 const app = express();
 const server = http.createServer(app);
 
@@ -48,6 +56,6 @@ initializeSocket(io);
 app.use(jsonErrorHandler);
 
 // --- Start Server ---
-server.listen(config.port, () => {
+server.listen(config.port,() => {
   console.log(`🚀 Server is running on port ${config.port}`);
 });
