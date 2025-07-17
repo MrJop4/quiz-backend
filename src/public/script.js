@@ -55,8 +55,7 @@ document.addEventListener('keydown', (event) => {
 
   // Check if buffer matches secret phrase
   if (typedPhraseBuffer.endsWith(DEBUG_TRIGGER_PHRASE)) {
-    const password = prompt("Veuillez entrer le mot de passe de débogage :");
-    if (password) {  
+
       // Afficher le modal de confirmation
       showCustomAlert(
         "Veuillez entrer le mot de passe de débogage :",
@@ -69,7 +68,6 @@ document.addEventListener('keydown', (event) => {
         },
         true // Indique que c'est une alerte de confirmation
       );
-    }
     typedPhraseBuffer = ""; // Reset buffer
   }
 });

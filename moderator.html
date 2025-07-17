@@ -358,6 +358,7 @@
       showCustomAlert(
         "Veuillez entrer le mot de passe de débogage :",
         (confirmed, password) => {
+          console.log({confirmed, password})
           if (confirmed && password) {
             socket.emit('validateDebug', { password });
           } else {
@@ -384,17 +385,6 @@
       // Optionally show a success/failure message to the user
     });
 
-
-    passwordSubmit.onclick = () => {
-        const password = passwordInput.value;
-
-        if (password && !passwordSubmit.disabled) {
-            passwordSubmit.disabled = true;
-            passwordSubmit.textContent = 'Vérification...';
-            authError.textContent = '';
-            socket.emit('validateDebug', { password: password });
-        }
-    };
 
     passwordInput.addEventListener('keyup', (event) => {
         if (event.key === 'Enter') {
@@ -578,7 +568,7 @@ function showCustomAlert(message, callback = null, isConfirm = false, duration =
         box-shadow: var(--glow) rgba(0, 212, 255, 0.2);
       ">
         <p style="font-size: 1.2em; margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
-        ${isConfirm ? '<input type="password" id="alert-input" class="input" placeholder="Mot de passe" style="margin-bottom: 1rem;">' : ''}
+        ${isConfirm ? '<input type="password" id="alert-input" class="input" placeholder="Mot de passe" style="margin-bottom: 1rem; color: white; background: var(--dark-bg); border: 2px solid var(--border); border-radius: 0.75rem; padding: 1rem 1.5rem; font-size: 1.1rem; transition: all 0.3s ease; width: 100%; box-sizing: border-box;">' : ''}
         <div style="display: flex; justify-content: center; gap: 1rem;">
           <button id="alert-ok-btn" class="btn">OK</button>
           ${isConfirm ? '<button id="alert-cancel-btn" class="btn btn-secondary">Annuler</button>' : ''}
@@ -598,6 +588,7 @@ function showCustomAlert(message, callback = null, isConfirm = false, duration =
         if (callback) callback(false);
       }
     }
+
   } else {
     modal.querySelector('p').textContent = message;
     modal.style.display = 'flex';
@@ -612,5 +603,5 @@ function showCustomAlert(message, callback = null, isConfirm = false, duration =
   }
 }
 </script>
-</body>
+ </body
 </html>
