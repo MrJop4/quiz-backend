@@ -167,6 +167,83 @@ function createPlayerItemWithAvatar(player) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    // ===== FONCTIONS UTILITAIRES =====
+function showCustomAlert(message, callback = null, isConfirm = false, duration = 0) {
+  const alertId = 'custom-alert-modal';
+  let modal = document.getElementById(alertId);
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = alertId;
+    modal.style = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: var(--glow) rgba(0, 212, 255, 0.2);
+      ">
+        <p style="font-size: 1.2em; margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+          <button id="alert-ok-btn" class="btn">OK</button>
+          ${isConfirm ? '<button id="alert-cancel-btn" class="btn btn-secondary">Annuler</button>' : ''}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('alert-ok-btn').onclick = () => {
+      modal.remove();
+      if (callback) callback(true);
+    };
+
+    if (isConfirm) {
+      document.getElementById('alert-cancel-btn').onclick = () => {
+        modal.remove();
+        if (callback) callback(false);
+      };
+    }
+  } else {
+    modal.querySelector('p').textContent = message;
+    modal.style.display = 'flex';
+    // Gérer les boutons si le type d'alerte change
+    const confirmBtn = modal.querySelector('#alert-cancel-btn');
+    if (isConfirm && !confirmBtn) {
+      const okBtn = modal.querySelector('#alert-ok-btn');
+      const newCancelBtn = document.createElement('button');
+      newCancelBtn.id = 'alert-cancel-btn';
+      newCancelBtn.className = 'btn btn-secondary';
+      newCancelBtn.textContent = 'Annuler';
+      newCancelBtn.onclick = () => { modal.remove(); if (callback) callback(false); };
+      okBtn.parentNode.appendChild(newCancelBtn);
+    } else if (!isConfirm && confirmBtn) {
+      confirmBtn.remove();
+    }
+  }
+
+  if (duration > 0 && !isConfirm) { // Auto-fermer si c'est une alerte simple avec durée
+    setTimeout(() => {
+      if (modal && modal.parentNode) {
+        modal.remove();
+        if (callback) callback(); // Appeler le callback sans argument pour une alerte simple
+      }
+    }, duration);
+  }
+}
+
 // ===== GESTION DE LA CONNEXION =====
 socket.on('connect', () => {
   logDebug('Socket connecté avec ID:', socket.id);
@@ -1249,85 +1326,6 @@ function nullifyCurrentQuestion() {
   
   document.getElementById('pause-screen').style.display = "none";
 }
-
-// ===== FONCTIONS UTILITAIRES =====
-function showCustomAlert(message, callback = null, isConfirm = false, duration = 0) {
-  const alertId = 'custom-alert-modal';
-  let modal = document.getElementById(alertId);
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = alertId;
-    modal.style = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100000;
-    `;
-    modal.innerHTML = `
-      <div style="
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 2rem;
-        max-width: 400px;
-        text-align: center;
-        box-shadow: var(--glow) rgba(0, 212, 255, 0.2);
-      ">
-        <p style="font-size: 1.2em; margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
-        <div style="display: flex; justify-content: center; gap: 1rem;">
-          <button id="alert-ok-btn" class="btn">OK</button>
-          ${isConfirm ? '<button id="alert-cancel-btn" class="btn btn-secondary">Annuler</button>' : ''}
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    document.getElementById('alert-ok-btn').onclick = () => {
-      modal.remove();
-      if (callback) callback(true);
-    };
-
-    if (isConfirm) {
-      document.getElementById('alert-cancel-btn').onclick = () => {
-        modal.remove();
-        if (callback) callback(false);
-      };
-    }
-  } else {
-    modal.querySelector('p').textContent = message;
-    modal.style.display = 'flex';
-    // Gérer les boutons si le type d'alerte change
-    const confirmBtn = modal.querySelector('#alert-cancel-btn');
-    if (isConfirm && !confirmBtn) {
-      const okBtn = modal.querySelector('#alert-ok-btn');
-      const newCancelBtn = document.createElement('button');
-      newCancelBtn.id = 'alert-cancel-btn';
-      newCancelBtn.className = 'btn btn-secondary';
-      newCancelBtn.textContent = 'Annuler';
-      newCancelBtn.onclick = () => { modal.remove(); if (callback) callback(false); };
-      okBtn.parentNode.appendChild(newCancelBtn);
-    } else if (!isConfirm && confirmBtn) {
-      confirmBtn.remove();
-    }
-  }
-
-  if (duration > 0 && !isConfirm) { // Auto-fermer si c'est une alerte simple avec durée
-    setTimeout(() => {
-      if (modal && modal.parentNode) {
-        modal.remove();
-        if (callback) callback(); // Appeler le callback sans argument pour une alerte simple
-      }
-    }, duration);
-  }
-}
-
-
 // ===== INITIALISATION =====
 // Pré-remplir les champs s'ils existent en localStorage
   if (localStorage.getItem('quiz_roomCode')) {
