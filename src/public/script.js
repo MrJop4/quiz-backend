@@ -165,6 +165,8 @@ function createPlayerItemWithAvatar(player) {
   `;
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+
 // ===== GESTION DE LA CONNEXION =====
 socket.on('connect', () => {
   logDebug('Socket connecté avec ID:', socket.id);
@@ -276,7 +278,7 @@ function clearSessionData() {
 }
 
 // ===== GESTION DES BOUTONS PRINCIPAUX =====
-document.addEventListener('DOMContentLoaded', function() {document.getElementById('btn-create-room').onclick = function() {
+document.getElementById('btn-create-room').onclick = function() {
   isHost = true;
   selectedAvatar = getRandomAvatar();
   document.getElementById('lobby-choice').style.display = "none";
@@ -1327,7 +1329,7 @@ function showCustomAlert(message, callback = null, isConfirm = false, duration =
 
 
 // ===== INITIALISATION =====
-window.addEventListener('DOMContentLoaded', function() {  // Pré-remplir les champs s'ils existent en localStorage
+// Pré-remplir les champs s'ils existent en localStorage
   if (localStorage.getItem('quiz_roomCode')) {
     document.getElementById('input-room-code').value = localStorage.getItem('quiz_roomCode');
   }
@@ -1360,6 +1362,4 @@ window.addEventListener('DOMContentLoaded', function() {  // Pré-remplir les ch
         }
     })
     .catch(error => console.error('Error fetching difficulties:', error))
-
-});
 });
