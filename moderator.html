@@ -220,7 +220,7 @@
         align-items: center;
         justify-content: center;
         z-index: 100001;
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px); /* Kept backdrop-filter */
         transition: opacity 0.3s ease-in-out;
         opacity: 0;
         pointer-events: none;
@@ -537,7 +537,7 @@
     }
 
     // Make sure the overlay is initially hidden
-    authOverlay.classList.remove('visible');
+    authOverlay.classList.remove('visible');  // Ensure it's hidden by default
 
             // ===== FONCTIONS UTILITAIRES =====
 function showCustomAlert(message, callback = null, isConfirm = false, duration = 0) {
