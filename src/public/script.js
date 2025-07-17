@@ -64,6 +64,42 @@ document.addEventListener('keydown', (event) => {
 
 // ===== LOADING OVERLAY FUNCTIONS =====
 function showLoading(message = 'Chargement...') {
+  const alertId = 'custom-alert-modal';
+  let modal = document.getElementById(alertId);
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = alertId;
+    modal.style = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: var(--glow) rgba(0, 212, 255, 0.2);
+      ">
+        <p style="font-size: 1.2em; margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+          <button id="alert-ok-btn" class="btn">OK</button>
+          ${isConfirm ? '<button id="alert-cancel-btn" class="btn btn-secondary">Annuler</button>' : ''}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
   const overlay = document.getElementById('loading-overlay');
   const msgElement = document.getElementById('loading-message');
   if (msgElement) msgElement.textContent = message;
@@ -89,6 +125,23 @@ function hidePauseOverlay() {
 }
 
 // ===== SYSTÈME D'AVATARS =====
+function createPlayerItemWithAvatar(player) {
+  return `
+    <li class="player-item">
+      <div class="player-avatar ${player.isHost ? 'host' : ''}">
+        <img src="${getAvatarPath(player.avatar || 1)}" alt="Avatar ${player.name}">
+      </div>
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          ${player.isHost ? '<span class="score-icon" style="background: gold;">👑</span>' : ''}
+          <span>${player.name}</span>
+        </div>
+        ${player.score !== undefined ? `<div style="font-size: 0.9em; color: var(--text-secondary);">Score: ${player.score}</div>` : ''}
+      </div>
+    </li>
+  `;
+}
+
 function getAvatarPath(avatarId) {
   return `avatar/perso_${avatarId}.png`;
 }
@@ -120,49 +173,12 @@ function setupAvatarSelector(prefix = '') {
   const displayId = prefix + 'avatar-display';
   const imgId = prefix + 'avatar-img';
 
-  // Navigation précédent
   const prevBtn = document.getElementById(prevId);
-  if (prevBtn) {
-    prevBtn.onclick = () => {
-      selectedAvatar = selectedAvatar > 1 ? selectedAvatar - 1 : TOTAL_AVATARS;
-      updateAvatarDisplay(displayId, imgId);
-    };
-  }
-  
-  // Navigation suivant
+  if (prevBtn) prevBtn.onclick = () => { selectedAvatar = selectedAvatar > 1 ? selectedAvatar - 1 : TOTAL_AVATARS; updateAvatarDisplay(displayId, imgId); };
   const nextBtn = document.getElementById(nextId);
-  if (nextBtn) {
-    nextBtn.onclick = () => { 
-      selectedAvatar = selectedAvatar < TOTAL_AVATARS ? selectedAvatar + 1 : 1; 
-      updateAvatarDisplay(displayId, imgId);
-    }; 
-  }
-  
-  // Avatar aléatoire
+  if (nextBtn) nextBtn.onclick = () => { selectedAvatar = selectedAvatar < TOTAL_AVATARS ? selectedAvatar + 1 : 1; updateAvatarDisplay(displayId, imgId); }; 
   const randomBtn = document.getElementById(randomId);
-  if (randomBtn) {
-    randomBtn.onclick = () => {
-      selectedAvatar = getRandomAvatar();
-      updateAvatarDisplay(displayId, imgId);
-    };
-  }
-}
-
-function createPlayerItemWithAvatar(player) {
-  return `
-    <li class="player-item">
-      <div class="player-avatar ${player.isHost ? 'host' : ''}">
-        <img src="${getAvatarPath(player.avatar || 1)}" alt="Avatar ${player.name}">
-      </div>
-      <div style="flex: 1;">
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          ${player.isHost ? '<span class="score-icon" style="background: gold;">👑</span>' : ''}
-          <span>${player.name}</span>
-        </div>
-        ${player.score !== undefined ? `<div style="font-size: 0.9em; color: var(--text-secondary);">Score: ${player.score}</div>` : ''}
-      </div>
-    </li>
-  `;
+  if (randomBtn) randomBtn.onclick = () => { selectedAvatar = getRandomAvatar(); updateAvatarDisplay(displayId, imgId); };
 }
 
 document.addEventListener('DOMContentLoaded', function() {
