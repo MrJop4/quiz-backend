@@ -4,7 +4,7 @@ module.exports = (io) => {
   const onConnection = (socket) => {
     console.log(`User connected: ${socket.id}`);
 
-    // Register handlers for different features
+    // handlers for different features
     registerGameHandlers(io, socket);
   };
 

@@ -262,14 +262,14 @@
   <div class="quiz-card">
     <h1 class="lobby-title" style="text-align: center;">Tableau de Bord Modérateur</h1>
     <div id="server-stats" class="server-stats">
-        <!-- Les statistiques du serveur seront affichées ici -->
+        <!-- statistiques du serveur ici -->
     </div>
     <div class="dashboard-layout">
         <div id="room-list-container">
-            <!-- La liste des salles sera affichée ici -->
+            <!-- liste des salles ici -->
         </div>
         <div id="room-details-container">
-            <!-- Les détails de la salle sélectionnée seront affichés ici -->
+            <!-- détails de la salle sélectionnée ici -->
         </div>
     </div>
   </div>
@@ -290,7 +290,7 @@
     passwordSubmit.onclick = () => {
         const password = passwordInput.value;
         if (password) {
-            authError.textContent = ''; // Clear previous errors
+            authError.textContent = '';
             socket.emit('registerModerator', { password: password });
         }
     };
@@ -303,7 +303,6 @@
 
     socket.on('connect', () => {
         console.log('Connecté au serveur, en attente d\'authentification.');
-        // Le modal est déjà visible par défaut
     });
 
     socket.on('moderatorAuthSuccess', () => {
@@ -314,7 +313,7 @@
     socket.on('moderatorAuthFailed', ({ message }) => {
         console.error('Échec de l\'authentification:', message);
         authError.textContent = message;
-        passwordInput.value = ''; // Vider le champ
+        passwordInput.value = '';
     });
 
     socket.on('disconnect', () => {
@@ -394,7 +393,7 @@
         }
         const room = currentStatusData.roomDetails.find(r => r.code === selectedRoomCode);
         if (!room) {
-            selectedRoomCode = null; // La salle n'existe plus
+            selectedRoomCode = null;
             detailsContainer.innerHTML = '<p class="details-placeholder">Cette salle n\'existe plus. Sélectionnez une autre salle.</p>';
             return;
         }

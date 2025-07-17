@@ -4,7 +4,6 @@ module.exports = {
   port: process.env.PORT || 3000,
   allowedOrigins: [
     'http://localhost:5173',
-    'https://polyquiz-sc.vercel.app',
     'https://polyquiz-sc.up.railway.app'
   ],
 };

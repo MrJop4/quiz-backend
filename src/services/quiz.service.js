@@ -25,22 +25,21 @@ exports.getAvailableDifficulties = () => {
     }
     const difficulty = question.difficulty;
 
-    // If we haven't seen this difficulty before, initialize it.
+    // If new difficulty, initialize it.
     if (!acc[difficulty]) {
       acc[difficulty] = {
         id: difficulty,
-        // Capitalize the first letter for a nice display name.
+        // Capitalize the first letter for a nice display name ;)
         name: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),
         questions: 0,
       };
     }
 
-    // Increment the question count for this difficulty.
     acc[difficulty].questions += 1;
     return acc;
   }, {});
 
-  // Convert the map of difficulties into an array for the API response.
+  // Convert the map of difficulties into an array for the API response -> /api/difficulties.
   return Object.values(difficultyMap);
 };
 

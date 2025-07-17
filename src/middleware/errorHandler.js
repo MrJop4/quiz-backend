@@ -1,17 +1,13 @@
-/**
- * A middleware function that catches errors and sends a standardized JSON error response.
- * This should be the last middleware added to the Express app.
- */
+// catches errors and sends a standardized JSON error response.
 const jsonErrorHandler = (err, req, res, next) => {
-  // Log the full error to the console for debugging on the server.
+  // Log the full error to the console
   console.error(err.stack);
 
-  // Use the error's status code or default to 500 (Internal Server Error).
   const statusCode = err.statusCode || 500;
 
   res.status(statusCode).json({
     message: err.message,
-    // In development, you might want to send the stack trace. In production, it's better to hide it.
+    // stack trace for dev !not for prod
     stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
   });
 };

@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const questionDatabase = require('../questiondatabase.js');
 
-// --- Helper function to calculate similarity ---
-// Levenshtein distance: a measure of the difference between two sequences.
+// --- calculate similarity ---
+// Levenshtein distance: measure of the difference between two sequences.
 function levenshtein(a, b) {
   if (a.length === 0) return b.length;
   if (b.length === 0) return a.length;
@@ -27,17 +27,17 @@ function levenshtein(a, b) {
   return matrix[a.length][b.length];
 }
 
-// 1. Get all image paths from the database
+// get all image paths from the db
 const dbImages = new Set(
   questionDatabase
     .filter(q => q.image)
-    .map(q => path.normalize(q.image)) // Normalize paths for cross-os compatibility
+    .map(q => path.normalize(q.image)) 
 );
 
 console.log(`\n🔎 Found ${dbImages.size} unique image references in the database.`);
 
-// 2. Get all image files from the filesystem
-const imageDir = path.join(__dirname, '..', 'public', 'images'); // Path relative to script location
+// get all image files from the filesystem
+const imageDir = path.join(__dirname, '..', 'public', 'images');
 let fsImages = new Set();
 
 function findImagesInDir(directory) {
@@ -49,14 +49,12 @@ function findImagesInDir(directory) {
       if (stat.isDirectory()) {
         findImagesInDir(fullPath);
       } else if (/\.(jpg|jpeg|png|gif)$/i.test(file)) {
-        // Get path relative to project root and normalize
         const relativePath = path.relative(path.join(__dirname, '..'), fullPath);
         fsImages.add(path.normalize(relativePath));
       }
     }
   } catch (error) {
     if (error.code !== 'ENOENT') throw error;
-    // Ignore if a subdirectory doesn't exist
   }
 }
 
@@ -64,10 +62,9 @@ try {
   findImagesInDir(imageDir);
   console.log(`🖼️  Found ${fsImages.size} image files on the filesystem.`);
 
-  // 3. Compare the two sets
   console.log('\n--- Analysis ---');
 
-  // Images in DB but not in filesystem (broken links)
+  // broken links
   const brokenLinks = [...dbImages].filter(dbImage => !fsImages.has(dbImage));
   const fsImagesArray = [...fsImages];
   const suggestions = new Map();
@@ -79,7 +76,7 @@ try {
         let bestMatch = null;
         let minDistance = Infinity;
 
-        // Compare with all actual files to find the closest match
+        // Comparison into match
         fsImagesArray.forEach(fsImage => {
             // Using Levenshtein distance on lowercase basenames is a good heuristic for typos and case issues
             const dist = levenshtein(path.basename(brokenLink).toLowerCase(), path.basename(fsImage).toLowerCase());
@@ -89,8 +86,7 @@ try {
             }
         });
 
-        // Only suggest if the match is reasonably close. A small distance (e.g., <= 4)
-        // usually indicates a typo or a case-sensitivity issue.
+        // Only suggest if the match is reasonably close.
         if (bestMatch && minDistance <= 4) {
             suggestions.set(brokenLink, { suggestion: bestMatch, distance: minDistance });
         } else {
@@ -112,7 +108,7 @@ try {
     console.log('\n✅ SUCCESS: All images in the database seem to exist on the filesystem.');
   }
 
-  // Images in filesystem but not in DB (unused images)
+  // (unused images)
   const unusedImages = [...fsImages].filter(fsImage => !dbImages.has(fsImage));
 
   if (unusedImages.length > 0) {

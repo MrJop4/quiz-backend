@@ -702,7 +702,7 @@
         <div style="font-size:1.5em; color:var(--primary); margin-bottom:18px;">Partage ce code avec ton chat :</div>
         <div id="room-code" class="room-code-display fade-in"></div>
         
-        <!-- Compteur de joueurs avec style -->
+        <!-- Compteur de joueurs -->
         <div style="
           display: flex; 
           align-items: center; 
@@ -775,7 +775,7 @@
           <button id="host-avatar-random" class="btn btn-secondary" style="font-size: 0.9em; padding: 0.5rem 1rem;">🎲 Aléatoire</button>
         </div>
 
-        <!-- NOUVEAU: Paramètres de partie -->
+        <!-- Paramètres de partie -->
         <div style="font-size: 1.2em; color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600;">
           ⚙️ Paramètres du quiz
         </div>
@@ -808,7 +808,7 @@
   </div>
 </div>
 
-<!-- NOUVEAU: Overlay de chargement -->
+<!-- Overlay de chargement -->
 <div id="loading-overlay">
   <div class="spinner"></div>
   <div id="loading-message">Chargement...</div>
@@ -839,7 +839,7 @@ let timePerQuestion = TIME_PER_QUESTION_DEFAULT; // Sera mise à jour par le ser
 
 const TIME_IMAGE_POPUP = 4000;
 const TOTAL_AVATARS = 40;
-const socket = io('https://polyquiz-sc.up.railway.app'); // L'URL de votre serveur (sans / à la fin)
+const socket = io('https://polyquiz-sc.up.railway.app'); // URL serveur (sans / à la fin !)
 
 // Variables pour les timers et l'état du jeu
 let timerBarInterval = null, selectedIndex = null; // selectedIndex stocke le choix temporaire du joueur

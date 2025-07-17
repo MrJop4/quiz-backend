@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const quizService = require('./quiz.service');
 
-// This object will act as our in-memory "database" for active games.
+//in-memory "database" for active games
 const games = {};
 
 /**
@@ -15,7 +15,7 @@ const sanitizeQuestion = (question) => {
   return sanitized;
 };
 const createGame = (hostId, difficulty) => {
-  const gameId = uuidv4().substring(0, 5).toUpperCase(); // A short, user-friendly ID
+  const gameId = uuidv4().substring(0, 5).toUpperCase(); // "user-friendly" ID
   const difficulties = quizService.getAvailableDifficulties();
   const selectedDifficulty = difficulties.find(d => d.id === difficulty);
 
@@ -31,7 +31,7 @@ const createGame = (hostId, difficulty) => {
   const newGame = {
     id: gameId,
     hostId: hostId,
-    players: {}, // Use an object for players for quick lookups
+    players: {},
     questions: questions,
     currentQuestionIndex: 0,
     state: 'lobby', // States: lobby, playing, finished
@@ -53,7 +53,7 @@ const addPlayer = (gameId, socketId, playerData) => {
     throw new Error('Game not found');
   }
 
-  // You can add more validation here (e.g., max players)
+  // possibility to add more validation here (e.g., max players)
 
   game.players[socketId] = {
     id: socketId,
@@ -69,7 +69,6 @@ const addPlayer = (gameId, socketId, playerData) => {
 
 const removePlayer = (gameId, socketId) => {
   const game = getGame(gameId);
-  // If the game or player doesn't exist, do nothing.
   if (!game || !game.players[socketId]) {
     return null;
   }

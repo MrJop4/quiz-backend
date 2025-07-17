@@ -5,7 +5,7 @@ module.exports = (io, socket) => {
     try {
       const newGame = gameService.createGame(socket.id, difficulty);
       socket.join(newGame.id);
-      // Only send to the host who created it
+      // Only send to the host who created it !
       socket.emit('game:created', newGame);
     } catch (error) {
       socket.emit('game:error', { message: error.message });
@@ -21,12 +21,12 @@ module.exports = (io, socket) => {
       if (!playerData || typeof playerData.name !== 'string' || playerData.name.trim().length === 0 || playerData.name.length > 15) {
         return socket.emit('game:error', { message: 'Invalid player name. Must be 1-15 characters.' });
       }
-      // You can add more checks for avatar, ship, etc.
+      // possibility to add more checks for avatar, ship, etc. here
 
       // Add player to the game state
       const updatedGame = gameService.addPlayer(gameId, socket.id, playerData);
       socket.join(gameId);
-      // Store gameId on the socket for efficient disconnect handling
+      // Store gameId on the socket for good disconnect handling
       socket.gameId = gameId;
 
       // Notify everyone in the room (including the new player) about the update
