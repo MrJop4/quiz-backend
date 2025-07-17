@@ -1327,8 +1327,7 @@ function showCustomAlert(message, callback = null, isConfirm = false, duration =
 
 
 // ===== INITIALISATION =====
-window.addEventListener('DOMContentLoaded', function() {
-  // Pré-remplir les champs s'ils existent en localStorage
+window.addEventListener('DOMContentLoaded', function() {  // Pré-remplir les champs s'ils existent en localStorage
   if (localStorage.getItem('quiz_roomCode')) {
     document.getElementById('input-room-code').value = localStorage.getItem('quiz_roomCode');
   }
@@ -1360,5 +1359,6 @@ window.addEventListener('DOMContentLoaded', function() {
             });
         }
     })
-    .catch(error => console.error('Error fetching difficulties:', error));
+    .catch(error => console.error('Error fetching difficulties:', error))
+
 });
