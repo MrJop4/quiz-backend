@@ -1,5 +1,3 @@
-const {getIO} = require('./socketManager');
-
 exports.validateDebugPassword = (io, socket) => {
   const validateDebug = ({ password }) => {
     if (password === process.env.DEBUG_PASSWORD) {
